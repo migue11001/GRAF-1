@@ -514,3 +514,49 @@
     background-position: center;
     background-repeat: no-repeat;
 }
+
+/* --- Responsive Styles for Mobile --- */
+@media (max-width: 768px) {
+    #teleprompter-text-content {
+        font-size: 28px; /* Smaller font size for mobile */
+        line-height: 1.4;
+    }
+
+    #teleprompter-script-editor {
+        height: 150px; /* Reduce height of script editor */
+    }
+
+    #teleprompter-controls {
+        bottom: 150px; /* Adjust position to match new editor height */
+    }
+
+    #teleprompter-controls nav {
+        flex-wrap: wrap; /* Allow buttons to wrap */
+        padding: 0.25rem;
+    }
+
+    #teleprompter-controls nav button {
+        padding: 0.4rem;
+    }
+    
+    #teleprompter-controls nav svg {
+        width: 28px; /* Slightly smaller icons */
+        height: 28px;
+    }
+
+    #teleprompter-controls .drawer {
+        /* Force a single column layout for the drawer */
+        grid-template-columns: 1fr;
+    }
+
+    .gradient-presets-grid {
+        /* Adjust grid for smaller screens */
+        grid-template-columns: repeat(auto-fit, minmax(35px, 1fr));
+        gap: 4px;
+    }
+
+    .gradient-preset {
+        width: 100% !important;
+        height: 35px !important;
+    }
+}
