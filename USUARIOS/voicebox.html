@@ -3,3022 +3,554 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediaBox - Tu Espacio Multimedia</title>
+    <title>VoiceBox - Teleprompter</title>
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/teleprompter.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0a0a0f;
-            color: #ffffff;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
-        /* Nebula background */
-        .nebula-background {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.2) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 70%, rgba(255, 165, 0, 0.15) 0%, transparent 50%),
-                        radial-gradient(circle at 50% 50%, rgba(255, 255, 0, 0.1) 0%, transparent 50%);
-            animation: nebula-drift 20s ease-in-out infinite;
-        }
-
-        @keyframes nebula-drift {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            50% { transform: scale(1.1) rotate(180deg); }
-        }
-
-        /* Animated glow overlays */
-        .glow-overlay {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-        }
-
-        .glow-sphere {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(60px);
-            animation: pulse-glow 4s ease-in-out infinite;
-        }
-
-        .glow-sphere:nth-child(1) {
-            top: 25%;
-            left: 25%;
-            width: 400px;
-            height: 400px;
-            background: rgba(255, 165, 0, 0.2);
-        }
-
-        .glow-sphere:nth-child(2) {
-            bottom: 25%;
-            right: 25%;
-            width: 400px;
-            height: 400px;
-            background: rgba(255, 215, 0, 0.2);
-            animation-delay: 1s;
-        }
-
-        .glow-sphere:nth-child(3) {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 600px;
-            height: 600px;
-            background: rgba(255, 255, 0, 0.1);
-            animation-delay: 2s;
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% { opacity: 0.5; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.1); }
-        }
-
-        /* Header - kept from original index.html */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            padding: 1rem 2rem;
-            background: rgba(10, 10, 15, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: #000;
+            color: #fff;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 900;
-            font-family: 'Courier New', monospace;
-            background: linear-gradient(to right, #FFA500, #FFD700, #FFFF00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
-            letter-spacing: 3px;
-            transform: skew(-5deg);
-            text-transform: uppercase;
-        }
-
-        .header-buttons {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .header-button {
-            padding: 0.5rem 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 0.5rem;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .header-button:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.9);
-            transform: translateY(-1px);
-        }
-
-        .header-button.active {
-            background: linear-gradient(135deg, #FFA500, #FFD700);
-            color: white;
-            border-color: transparent;
-        }
-
-        /* Language selector */
-        .language-selector {
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .language-flag {
-            padding: 0.5rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
             justify-content: center;
-            width: 48px;
-            height: 40px;
-            position: relative;
-        }
-
-        .language-flag:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-1px) scale(1.1);
-        }
-
-        .language-flag.active {
-            background: linear-gradient(135deg, #FFA500, #FFD700);
-            border-color: transparent;
-            box-shadow: 0 0 20px rgba(255, 165, 0, 0.3);
-        }
-
-        .language-flag.recording {
-            animation: pulse 1s ease-in-out infinite;
-            background: linear-gradient(135deg, #ff4444, #cc0000);
-            box-shadow: 0 0 30px rgba(255, 68, 68, 0.5);
-        }
-
-        .language-flag .mic-icon {
-            position: absolute;
-            bottom: -2px;
-            right: -2px;
-            font-size: 0.7rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .language-more {
-            padding: 0.5rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.7);
-            display: flex;
             align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-        }
-
-        .language-more:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.9);
-            transform: translateY(-1px) rotate(90deg);
-        }
-
-        .language-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            margin-top: 0.5rem;
-            background: rgba(10, 10, 15, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 0.75rem;
-            padding: 0.5rem;
-            display: none;
-            flex-direction: column;
-            gap: 0.25rem;
-            min-width: 120px;
-            z-index: 200;
-        }
-
-        .language-dropdown.show {
-            display: flex;
-        }
-
-        .language-option {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .language-option:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-
-        /* VoiceBox Styles */
-        :root {
-            --background-base: #000000;
-            --background-highlight: #121212;
-            --background-press: #0a0a0a;
-            --background-elevated-base: #242424;
-            --background-elevated-highlight: #2a2a2a;
-            --text-base: #ffffff;
-            --text-subdued: #a7a7a7;
-            --essential-base: #ffffff;
-            --essential-subdued: #727272;
-            --accent-base: #FFD700;
-            --accent-press: #FFA500;
-            --card-background: #181818;
-        }
-
-        /* Main container with grid layout */
-        .voicebox-container {
-            position: relative;
-            z-index: 10;
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            grid-template-rows: 1fr auto;
-            grid-template-areas:
-                "sidebar main"
-                "player player";
             height: 100vh;
-            overflow: hidden;
-            padding-top: 5rem;
-        }
-
-        /* --- Sidebar --- */
-        .sidebar {
-            grid-area: sidebar;
-            background-color: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .sidebar-logo {
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: var(--accent-base);
-            text-align: center;
-            letter-spacing: 1px;
-        }
-
-        .sidebar-nav ul,
-        .sidebar-library ul {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .sidebar-nav a,
-        .sidebar-library a {
-            color: var(--text-subdued);
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.875rem;
-            transition: color 0.2s ease;
-        }
-
-        .sidebar-nav a:hover,
-        .sidebar-library a:hover,
-        .sidebar-nav a.active {
-            color: var(--text-base);
-        }
-
-        /* --- Main Content --- */
-        .main-content {
-            grid-area: main;
-            background: rgba(36, 36, 36, 0.3);
-            backdrop-filter: blur(10px);
-            border-radius: 8px 8px 0 0;
-            margin: 0.5rem 0.5rem 0 0;
-            overflow-y: auto;
-            padding: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .playlist-header {
-            display: flex;
-            align-items: flex-end;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .playlist-cover {
-            width: 200px;
-            height: 200px;
-            background: rgba(42, 42, 42, 0.5);
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 5rem;
-            border-radius: 8px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .playlist-details {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .playlist-details .playlist-type {
-            font-size: 0.875rem;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .playlist-details .playlist-title {
-            font-size: 3rem;
-            font-weight: 900;
-        }
-
-        .playlist-details .playlist-description {
-            color: var(--text-subdued);
-            font-size: 0.875rem;
-        }
-
-        /* --- Voice Posts (Card Style) --- */
-        .voice-posts {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            padding: 1rem 0;
-        }
-
-        .voice-post {
-            background: rgba(24, 24, 24, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-            animation: fade-in 0.5s ease-out;
-        }
-
-        .voice-post:hover {
-            background: rgba(36, 36, 36, 0.8);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 32px rgba(255, 165, 0, 0.2);
-        }
-
-        .post-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .user-avatar {
-            width: 60px;
-            height: 60px;
-            background: rgba(42, 42, 42, 0.8);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 4px 16px rgba(255, 165, 0, 0.3);
-        }
-
-        .post-user-info {
-            flex: 1;
-        }
-
-        .post-username {
-            font-size: 1rem;
-            font-weight: bold;
-            color: var(--text-base);
-            margin-bottom: 0.25rem;
-        }
-
-        .post-timestamp {
-            font-size: 0.875rem;
-            color: var(--text-subdued);
-        }
-
-        .language-button {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 0.5rem;
-            padding: 0.5rem 0.75rem;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            backdrop-filter: blur(10px);
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .language-button:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-1px) scale(1.05);
-            box-shadow: 0 4px 16px rgba(255, 165, 0, 0.4);
-        }
-
-        .post-content {
-            margin-bottom: 1rem;
-        }
-
-        .post-title {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--text-base);
-            margin-bottom: 0.5rem;
-        }
-
-        .post-description {
-            color: var(--text-subdued);
-            font-size: 0.9rem;
-            line-height: 1.4;
-        }
-
-        .post-actions {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .play-control {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .play-button {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent-base), #FFA500);
-            border: none;
-            color: var(--background-base);
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .play-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 16px rgba(30, 215, 96, 0.4);
-        }
-
-        .play-button.playing {
-            background: linear-gradient(135deg, #ff4444, #cc0000);
-            animation: pulse-play 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse-play {
-            0%, 100% { box-shadow: 0 0 10px rgba(255, 68, 68, 0); }
-            50% { box-shadow: 0 0 20px rgba(255, 68, 68, 0.7); }
-        }
-
-        .wave-indicator {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .voice-post.playing .wave-indicator {
-            opacity: 1;
-        }
-
-        .wave-bar {
-            width: 3px;
-            height: 20px;
-            background: var(--accent-base);
-            border-radius: 2px;
-            animation: wave-pulse 1s ease-in-out infinite;
-        }
-
-        .wave-bar:nth-child(2) { animation-delay: 0.1s; }
-        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
-        .wave-bar:nth-child(4) { animation-delay: 0.3s; }
-        .wave-bar:nth-child(5) { animation-delay: 0.4s; }
-
-        @keyframes wave-pulse {
-            0%, 100% { height: 10px; }
-            50% { height: 25px; }
-        }
-
-        .unavailable-text {
-            font-size: 0.75rem;
-            color: var(--text-subdued);
-            font-style: italic;
-        }
-
-        #empty-state {
-            text-align: center;
-            padding: 4rem;
-            color: var(--text-subdued);
-        }
-        
-        /* --- Player Controls --- */
-        .player-controls {
-            grid-area: player;
-            background: rgba(18, 18, 18, 0.8);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .publish-controls-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .publish-buttons {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .publish-button {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            backdrop-filter: blur(10px);
-        }
-
-        .publish-button:hover {
-            transform: scale(1.1) translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Specific button styles */
-        .record-btn {
-            background: linear-gradient(135deg, var(--accent-base), #FFA500);
-            color: var(--background-base);
-        }
-
-        .record-btn:hover {
-            background: linear-gradient(135deg, var(--accent-press), #FFD700);
-            box-shadow: 0 8px 25px rgba(30, 215, 96, 0.4);
-        }
-
-        .record-btn.recording {
-            background: linear-gradient(135deg, #ff4444, #cc0000);
-            animation: pulse-rec 1.5s ease-in-out infinite;
-        }
-
-        .audio-btn {
-            background: linear-gradient(135deg, #8a2be2, #9932cc);
-            color: white;
-        }
-
-        .audio-btn:hover {
-            background: linear-gradient(135deg, #9932cc, #8a2be2);
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
-        }
-
-        .image-btn {
-            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-            color: white;
-        }
-
-        .image-btn:hover {
-            background: linear-gradient(135deg, #ff8e8e, #ff6b6b);
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
-        }
-
-        .text-btn {
-            background: linear-gradient(135deg, #4ecdc4, #44a08d);
-            color: white;
-        }
-
-        .text-btn:hover {
-            background: linear-gradient(135deg, #44a08d, #4ecdc4);
-            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
-        }
-
-        .url-btn {
-            background: linear-gradient(135deg, #f7b733, #fc4a1a);
-            color: white;
-        }
-
-        .url-btn:hover {
-            background: linear-gradient(135deg, #fc4a1a, #f7b733);
-            box-shadow: 0 8px 25px rgba(247, 183, 51, 0.4);
-        }
-
-        .create-btn {
-            background: linear-gradient(135deg, #ffd700, #ffed4e);
-            color: #2a2a2a;
-        }
-
-        .create-btn:hover {
-            background: linear-gradient(135deg, #ffed4e, #ffd700);
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
-        }
-
-        .delete-btn {
-            background: linear-gradient(135deg, #ff4757, #ff3838);
-            color: white;
-        }
-
-        .delete-btn:hover {
-            background: linear-gradient(135deg, #ff3838, #ff4757);
-            box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4);
-        }
-
-        .delete-btn.active {
-            background: linear-gradient(135deg, #ff1744, #d50000);
-            animation: pulse-delete 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse-delete {
-            0%, 100% { box-shadow: 0 0 10px rgba(255, 71, 87, 0); }
-            50% { box-shadow: 0 0 20px rgba(255, 71, 87, 0.7); }
-        }
-
-        /* Button separator */
-        .button-separator {
-            width: 2px;
-            height: 40px;
-            background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.3), transparent);
-            margin: 0 0.5rem;
-        }
-
-        /* Active state for buttons */
-        .publish-button.active {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
-        }
-
-        /* Create modal styles */
-        .create-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .create-option {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .create-option:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--accent-base);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(30, 215, 96, 0.2);
-        }
-
-        .create-icon {
-            font-size: 2rem;
-            min-width: 60px;
-            text-align: center;
-        }
-
-        .create-text h3 {
-            color: var(--text-base);
-            font-size: 1rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .create-text p {
-            color: var(--text-subdued);
-            font-size: 0.85rem;
             margin: 0;
-        }
-
-        /* Selection mode styles */
-        .post-selection {
-            opacity: 0;
-            transform: scale(0.8);
-            transition: all 0.3s ease;
-            margin-right: 0;
-            width: 0;
             overflow: hidden;
         }
-
-        .selection-mode .post-selection {
-            opacity: 1;
-            transform: scale(1);
-            margin-right: 0.75rem;
-            width: auto;
+        .teleprompter-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
-
-        .selection-label {
+        #teleprompter-panel {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        #teleprompter-controls nav button {
+            background-color: rgba(255, 215, 0, 0.5);
+            border-radius: 8px;
+            padding: 6px 14px;
+            min-height: 36px;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border: none;
             cursor: pointer;
-            display: inline-block;
+            transition: background-color 0.3s ease;
+            margin: 0 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
-
-        .checkbox-custom {
-            display: inline-block;
+        #teleprompter-controls nav button:hover {
+            background-color: rgba(255, 215, 0, 0.7);
+        }
+        #teleprompter-controls nav button svg {
+            fill: white;
             width: 24px;
             height: 24px;
-            border: 2px solid rgba(255, 255, 255, 0.4);
-            border-radius: 6px;
-            background: rgba(255, 255, 255, 0.05);
-            position: relative;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
         }
-
-        .selection-checkbox:checked + .selection-label .checkbox-custom {
-            background: linear-gradient(135deg, var(--accent-base), #FFA500);
-            border-color: var(--accent-base);
-            box-shadow: 0 0 15px rgba(30, 215, 96, 0.4);
-        }
-
-        .selection-checkbox:checked + .selection-label .checkbox-custom::after {
-            content: "✓";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: var(--background-base);
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .checkbox-custom:hover {
-            border-color: var(--accent-base);
-            background: rgba(30, 215, 96, 0.1);
-            transform: scale(1.1);
-        }
-
-        .selection-mode .voice-post {
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .selection-mode .voice-post:hover {
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .selection-mode .voice-post.selected {
-            border-color: var(--accent-base);
-            background: rgba(30, 215, 96, 0.1);
-            box-shadow: 0 0 20px rgba(30, 215, 96, 0.3);
-        }
-
-        /* Adjust post header layout for checkbox */
-        .post-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .post-user-info {
-            flex: 1;
-        }
-
-        .selection-counter {
-            background: rgba(255, 71, 87, 0.9);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            min-width: 20px;
-            text-align: center;
-        }
-        
-        @keyframes pulse-rec {
-            0%, 100% { box-shadow: 0 0 10px rgba(255, 68, 68, 0); }
-            50% { box-shadow: 0 0 20px rgba(255, 68, 68, 0.7); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        .status-text {
-            color: var(--text-subdued);
-            font-size: 0.75rem;
-            min-height: 1rem;
-        }
-
-        @keyframes fade-in {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .modal-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            background: rgba(24, 24, 24, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
-            padding: 2rem;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            transform: scale(0.9) translateY(20px);
-            transition: all 0.3s ease;
-        }
-
-        .modal-overlay.show .modal-content {
-            transform: scale(1) translateY(0);
-        }
-
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--text-base);
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text-subdued);
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 50%;
-            transition: all 0.2s ease;
-        }
-
-        .modal-close:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-base);
-        }
-
-        .modal-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .form-label {
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: var(--text-base);
-        }
-
-        .form-input,
-        .form-textarea {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            padding: 0.75rem;
-            color: var(--text-base);
-            font-size: 1rem;
-            transition: all 0.2s ease;
-        }
-
-        .form-input:focus,
-        .form-textarea:focus {
-            outline: none;
-            border-color: var(--accent-base);
-            box-shadow: 0 0 0 2px rgba(30, 215, 96, 0.2);
-        }
-
-        .form-textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-            margin-top: 1.5rem;
-        }
-
-        .modal-button {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .modal-button.primary {
-            background: linear-gradient(135deg, var(--accent-base), #FFA500);
-            color: var(--background-base);
-        }
-
-        .modal-button.primary:hover {
-            background: linear-gradient(135deg, var(--accent-press), #FFD700);
-            transform: translateY(-1px);
-        }
-
-        .modal-button.secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-base);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .modal-button.secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        /* File upload styles */
-        .file-upload-area {
-            border: 2px dashed rgba(255, 255, 255, 0.3);
-            border-radius: 12px;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .file-upload-area:hover {
-            border-color: var(--accent-base);
-            background: rgba(30, 215, 96, 0.05);
-        }
-
-        .file-upload-area.dragover {
-            border-color: var(--accent-base);
-            background: rgba(30, 215, 96, 0.1);
-        }
-
-        .upload-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.7;
-        }
-
-        .upload-text {
-            color: var(--text-subdued);
-            font-size: 0.9rem;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .voicebox-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto 1fr auto;
-                grid-template-areas:
-                    "sidebar"
-                    "main"
-                    "player";
-                padding-top: 4rem;
-            }
-            
-            .sidebar {
-                flex-direction: row;
-                padding: 1rem;
-                gap: 1rem;
-                border-right: none;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            }
-            
-            .sidebar-nav ul,
-            .sidebar-library ul {
-                flex-direction: row;
-                gap: 0.5rem;
-            }
-            
-            .main-content {
-                margin: 0;
-                border-radius: 0;
-            }
-        }
-
-        /* Biblioteca Personal Styles */
-        .draft-indicator {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255, 193, 7, 0.9);
-            color: #000;
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .published-indicator {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(40, 167, 69, 0.9);
-            color: #fff;
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .publish-button {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            border: none;
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-            color: #ffffff;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 0.5rem;
-        }
-
-        .publish-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
-        }
-
-        .publish-button:disabled {
-            background: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.5);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .cancel-publication-button {
-            background: linear-gradient(135deg, #dc3545, #fd7e14);
-            border: none;
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-            color: #ffffff;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 0.5rem;
-        }
-
-        .cancel-publication-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
-        }
-
-        .card-metadata {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 0.8rem;
-            margin-top: 0.5rem;
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .card-id {
-            font-family: 'Courier New', monospace;
-            color: #FFA500;
-            word-break: break-all;
-        }
-
-        .library-filter-buttons {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .filter-button {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 0.5rem 1rem;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .filter-button:hover,
-        .filter-button.active {
-            background: rgba(255, 215, 0, 0.3);
-            border-color: #FFD700;
-            color: #ffffff;
-        }
-
     </style>
 </head>
 <body>
 
-    <!-- Nebula background -->
-    <div class="nebula-background"></div>
-    
-    <!-- Animated glow overlays -->
-    <div class="glow-overlay">
-        <div class="glow-sphere"></div>
-        <div class="glow-sphere"></div>
-        <div class="glow-sphere"></div>
-    </div>
+    <div class="teleprompter-container">
+        <!-- Teleprompter Panel -->
+        <div id="teleprompter-panel" class="teleprompter-panel show">
 
-    <!-- Header - kept from original index.html -->
-    <header class="header">
-        <h1><a href="../index.html" style="text-decoration: none; color: inherit;">GRAFITER</a></h1>
-        
-        <div class="header-buttons">
-            <!-- Language selector -->
-            <div class="language-selector">
-                <button class="language-more" id="language-more">+</button>
-                <div class="language-dropdown" id="language-dropdown">
-                    <div class="language-option" data-lang="es" data-url="../SALONES/es.html">🇪🇸 Español</div>
-                    <div class="language-option" data-lang="us" data-url="../SALONES/us.html">🇺🇸 English</div>
-                    <div class="language-option" data-lang="it" data-url="../SALONES/it.html">🇮🇹 Italiano</div>
-                </div>
-            </div>
-            <button class="header-button active" data-period="day">Day</button>
-            <button class="header-button" data-period="week">Week</button>
-            <button class="header-button" data-period="month">Month</button>
-        </div>
-    </header>
-
-    <!-- VoiceBox Main Container -->
-    <div class="voicebox-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-logo">VOICEBOX</div>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li><a href="#" class="active">🏠 Inicio</a></li>
-                    <li><a href="#">🔍 Buscar</a></li>
-                    <li><a href="#">📚 Tu Biblioteca</a></li>
-                </ul>
-            </nav>
-            <div class="sidebar-library">
-                <ul>
-                    <li><a href="#">🎙️ Mis Grabaciones</a></li>
-                    <li><a href="#">⭐ Favoritos</a></li>
-                </ul>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <header class="playlist-header">
-                <div class="playlist-cover">🎤</div>
-                <div class="playlist-details">
-                    <span class="playlist-type">Biblioteca Personal</span>
-                    <h1 class="playlist-title" id="playlist-title">Mi Biblioteca</h1>
-                    <p class="playlist-description" id="playlist-description">Tus contenidos creados. Publica o mantén como borrador.</p>
-                </div>
-            </header>
-
-            <!-- Filtros de Biblioteca -->
-            <div class="library-filter-buttons">
-                <button class="filter-button active" data-filter="all" id="filter-all">
-                    📚 Todos
-                </button>
-                <button class="filter-button" data-filter="drafts" id="filter-drafts">
-                    📝 Borradores
-                </button>
-                <button class="filter-button" data-filter="published" id="filter-published">
-                    🌐 Publicados
-                </button>
-                <button class="filter-button" data-filter="audio" id="filter-audio">
-                    🎵 Audio
-                </button>
-                <button class="filter-button" data-filter="videos" id="filter-videos">
-                    🎥 Videos
-                </button>
-                <button class="filter-button" data-filter="images" id="filter-images">
-                    🖼️ Imágenes
-                </button>
-                <button class="filter-button" data-filter="text" id="filter-text">
-                    📝 Texto
-                </button>
-            </div>
-
-            <section class="voice-posts">
-                <div id="voice-wall">
-                    <!-- Las publicaciones de voz se insertarán aquí con JavaScript -->
-                </div>
-                <div id="empty-state">
-                    <p>Aún no hay notas de voz. ¿Listo para grabar tu primera nota?</p>
-                </div>
-            </section>
-        </main>
-
-        <!-- Player Controls -->
-        <footer class="player-controls">
-            <div class="publish-controls-container">
-                <div class="publish-buttons">
-                    <button id="record-button" class="publish-button record-btn" title="Grabar Audio">
-                        🎤
-                    </button>
-                    <button id="audio-upload-button" class="publish-button audio-btn" title="Cargar Audio">
-                        🎵
-                    </button>
-                    <button id="video-upload-button" class="publish-button video-btn" title="Cargar Video">
-                        🎥
-                    </button>
-                    <button id="image-upload-button" class="publish-button image-btn" title="Cargar Imagen">
-                        🖼️
-                    </button>
-                    <button id="text-button" class="publish-button text-btn" title="Escribir Texto">
-                        📝
-                    </button>
-                    <button id="url-button" class="publish-button url-btn" title="Añadir URL">
-                        🔗
-                    </button>
-                    <div class="button-separator"></div>
-                    <button id="create-button" class="publish-button create-btn" title="Crear Contenido">
-                        ✨
-                    </button>
-                    <button id="delete-button" class="publish-button delete-btn" title="Eliminar Seleccionado">
-                        🗑️
-                    </button>
-                </div>
-                <div id="status-text" class="status-text">Elige qué tipo de contenido quieres publicar</div>
-            </div>
+            <button class="close-btn" id="teleprompter-close-btn" style="display: none;">&times;</button>
             
-            <!-- Hidden file inputs -->
-            <input type="file" id="audio-file-input" accept="audio/*" style="display: none;">
-            <input type="file" id="video-file-input" accept="video/*" style="display: none;">
-            <input type="file" id="image-file-input" accept="image/*" style="display: none;">
-        </footer>
-    </div>
-
-    <!-- Modals -->
-    <!-- Text Modal -->
-    <div id="text-modal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">📝 Escribir Texto</h2>
-                <button class="modal-close" onclick="closeModal('text-modal')">&times;</button>
+            <div id="teleprompter-display">
+                <div id="scroll-spacer" style="height: 1rem;"></div>
+                <div id="image-wrapper-for-scroll" style="display: none; text-align: center; padding: 10px; background-color: rgba(255, 215, 0, 0.5); border-radius: 8px; margin: 0 5% 1rem 5%;">
+                    <img id="bg-image-layer" src="" alt="" style="height: 40vh; width: auto; max-width: 100%; object-fit: contain; border-radius: 4px;">
+                </div>
+                <div id="teleprompter-text-content"></div>
+                <div id="laser-cursor" class="laser-cursor"></div>
             </div>
-            <form class="modal-form" id="text-form">
-                <div class="form-group">
-                    <label class="form-label">Título</label>
-                    <input type="text" class="form-input" id="text-title" placeholder="Escribe un título..." maxlength="100">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Contenido</label>
-                    <textarea class="form-textarea" id="text-content" placeholder="Escribe tu mensaje..." maxlength="500"></textarea>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="modal-button secondary" onclick="closeModal('text-modal')">Cancelar</button>
-                    <button type="submit" class="modal-button primary">Publicar</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
-    <!-- URL Modal -->
-    <div id="url-modal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">🔗 Añadir URL</h2>
-                <button class="modal-close" onclick="closeModal('url-modal')">&times;</button>
-            </div>
-            <form class="modal-form" id="url-form">
-                <div class="form-group">
-                    <label class="form-label">URL</label>
-                    <input type="url" class="form-input" id="url-input" placeholder="https://ejemplo.com" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Título (opcional)</label>
-                    <input type="text" class="form-input" id="url-title" placeholder="Título del enlace..." maxlength="100">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Descripción (opcional)</label>
-                    <textarea class="form-textarea" id="url-description" placeholder="Describe el contenido del enlace..." maxlength="300"></textarea>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="modal-button secondary" onclick="closeModal('url-modal')">Cancelar</button>
-                    <button type="submit" class="modal-button primary">Publicar</button>
-                </div>
-            </form>
-        </div>
-    </div>
+            <div id="teleprompter-controls">
+                <nav>
+                    <button id="publish-btn">Publicar</button>
+                    <button id="background-btn">Background</button>
+                    <button id="teleprompter-play-btn" class="tp-ctrl-btn" title="Play">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 40 40"><path d="M13.333 31.583V8.25l18.334 11.667Zm2.792-11.666Zm0 6.625L26.5 19.917l-10.375-6.625Z"></path></svg>
+                    </button>
+                    <button id="teleprompter-pause-btn" class="tp-ctrl-btn" title="Pause" style="display:none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 40 40"><path d="M23.458 31.667V8.333H30v23.334Zm-13.458 0V8.333h6.542v23.334Z"></path></svg>
+                    </button>
+                    <button id="teleprompter-stop-btn" class="tp-ctrl-btn" title="Stop" style="display:none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 40 40"><path d="M10 10h20v20H10z"></path></svg>
+                    </button>
+                    <div class="drawer" id="teleprompter-drawer">
+                        <!-- Background Selector -->
+                        <div class="bg-selector-wrapper">
+                            <div class="bg-mode-tabs">
+                                <button class="bg-tab active" data-bg-mode="color">Color Sólido</button>
+                                <button class="bg-tab" data-bg-mode="gradient">Degradado</button>
+                                <button class="bg-tab" data-bg-mode="image">Imagen</button>
+                            </div>
 
-    <!-- Create Modal -->
-    <div id="create-modal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">✨ Crear Contenido</h2>
-                <button class="modal-close" onclick="closeModal('create-modal')">&times;</button>
+                            <!-- Panel: Color Sólido -->
+                            <div class="bg-panel active" id="bg-panel-color">
+                                <input type="color" id="teleprompter-bg-color" value="#000000">
+                                <div class="disable-select">Background color</div>
+                            </div>
+
+                            <!-- Panel: Degradado -->
+                            <div class="bg-panel" id="bg-panel-gradient">
+                                <div class="gradient-presets-grid">
+                                    <button class="gradient-preset" data-gradient="linear-gradient(135deg, #f97316, #ec4899)" title="Sunset"></button>
+                                    <button class="gradient-preset" data-gradient="linear-gradient(135deg, #2563eb, #06b6d4)" title="Ocean"></button>
+                                    <button class="gradient-preset" data-gradient="linear-gradient(135deg, #14532d, #4ade80)" title="Forest"></button>
+                                    <button class="gradient-preset" data-gradient="linear-gradient(135deg, #7c3aed, #3b82f6)" title="Purple Haze"></button>
+                                    <button class="gradient-preset" data-gradient="linear-gradient(135deg, #dc2626, #f97316)" title="Fire"></button>
+                                    <button class="gradient-preset" data-gradient="linear-gradient(135deg, #000000, #1e3a5f)" title="Night"></button>
+                                    <button class="gradient-preset" data-gradient="linear-gradient(135deg, #b8860b, #fde047)" title="Gold"></button>
+                                    <button class="gradient-preset" data-gradient="linear-gradient(135deg, #374151, #9ca3af)" title="Monochrome"></button>
+                                </div>
+                                <div class="gradient-custom">
+                                    <div class="gradient-custom-row">
+                                        <label class="disable-select">Color 1</label>
+                                        <input type="color" id="gradient-color1" value="#000000">
+                                    </div>
+                                    <div class="gradient-custom-row">
+                                        <label class="disable-select">Color 2</label>
+                                        <input type="color" id="gradient-color2" value="#1e3a5f">
+                                    </div>
+                                    <div class="gradient-custom-row">
+                                        <label class="disable-select">Ángulo: <span id="gradient-angle-display">135</span>°</label>
+                                        <input type="range" id="gradient-angle" min="0" max="360" value="135" step="1">
+                                    </div>
+                                    <button class="gradient-apply-btn" id="gradient-apply-custom">Aplicar degradado</button>
+                                </div>
+                            </div>
+
+                            <!-- Panel: Imagen -->
+                            <div class="bg-panel" id="bg-panel-image">
+                                <label class="image-upload-btn" for="teleprompter-bg-image">Subir imagen</label>
+                                <input type="file" id="teleprompter-bg-image" accept="image/*" style="display:none;">
+                                <div class="image-preview-container">
+                                    <img id="bg-image-preview" src="" alt="" style="display:none;">
+                                    <span class="disable-select" id="bg-image-placeholder">Sin imagen</span>
+                                </div>
+                                <div class="image-fit-options">
+                                    <label class="disable-select">Ajuste:</label>
+                                    <select id="bg-image-fit">
+                                        <option value="cover" selected>Cover</option>
+                                        <option value="contain">Contain</option>
+                                        <option value="stretch">Stretch</option>
+                                    </select>
+                                </div>
+                                <div class="image-opacity-row">
+                                    <label class="disable-select">Opacidad: <span id="bg-image-opacity-display">50</span>%</label>
+                                    <input type="range" id="bg-image-opacity" min="0" max="100" value="50" step="1">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <input type="color" id="teleprompter-text-color" value="#ffffff">
+                            <div class="disable-select">Text color</div>
+                        </div>
+                        <div>
+                            <input id="teleprompter-text-size" type="range" min="30" max="180" value="58" step="1">
+                            <div class="disable-select">Text size: <span id="teleprompter-text-size-display">58</span>px</div>
+                        </div>
+                        <div>
+                            <input id="teleprompter-margin" type="range" min="0" max="40" value="5" step="1">
+                            <div class="disable-select">Margin: <span id="teleprompter-margin-display">5</span>%</div>
+                        </div>
+                        <div>
+                            <input id="teleprompter-speed" type="range" min="1" max="50" value="10" step="1">
+                            <div class="disable-select">Speed: <span id="teleprompter-speed-display">10</span></div>
+                        </div>
+                        <div>
+                            <label class="audio-nav-btn" for="audio-file-input" style="display:block;width:100%;padding:0.5rem;border:none;border-radius:8px;font-size:0.9rem;font-weight:bold;color:white;cursor:pointer;text-align:center;box-sizing:border-box;">Audio</label>
+                            <input type="file" id="audio-file-input" accept="audio/*" style="display:none;">
+                            <div id="audio-loaded-info" style="display:none;">
+                                <audio id="audio-player" controls style="width:100%;margin-top:0.5rem;"></audio>
+                                <button class="audio-remove-btn" id="audio-remove-btn" style="width:100%;margin-top:0.4rem;padding:4px 8px;background:#444;color:#ccc;border:none;border-radius:4px;font-size:0.75rem;cursor:pointer;">Eliminar audio</button>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
             </div>
-            <div class="create-options">
-                <div class="create-option" onclick="createQuickContent('motivation')">
-                    <div class="create-icon">💪</div>
-                    <div class="create-text">
-                        <h3>Frase Motivacional</h3>
-                        <p>Genera una frase inspiradora</p>
-                    </div>
-                </div>
-                <div class="create-option" onclick="createQuickContent('tip')">
-                    <div class="create-icon">💡</div>
-                    <div class="create-text">
-                        <h3>Consejo del Día</h3>
-                        <p>Comparte un tip útil</p>
-                    </div>
-                </div>
-                <div class="create-option" onclick="createQuickContent('question')">
-                    <div class="create-icon">❓</div>
-                    <div class="create-text">
-                        <h3>Pregunta Reflexiva</h3>
-                        <p>Una pregunta para pensar</p>
-                    </div>
-                </div>
-                <div class="create-option" onclick="createQuickContent('gratitude')">
-                    <div class="create-icon">🙏</div>
-                    <div class="create-text">
-                        <h3>Nota de Gratitud</h3>
-                        <p>Expresa agradecimiento</p>
-                    </div>
-                </div>
-                <div class="create-option" onclick="createQuickContent('reminder')">
-                    <div class="create-icon">⏰</div>
-                    <div class="create-text">
-                        <h3>Recordatorio</h3>
-                        <p>Algo importante que recordar</p>
-                    </div>
-                </div>
-                <div class="create-option" onclick="createQuickContent('goal')">
-                    <div class="create-icon">🎯</div>
-                    <div class="create-text">
-                        <h3>Meta Personal</h3>
-                        <p>Define un objetivo</p>
-                    </div>
-                </div>
+
+            <div id="teleprompter-script-editor">
+                <textarea id="teleprompter-script" placeholder="Pega tu guion aquí..."></textarea>
             </div>
         </div>
     </div>
 
     <script>
-        class VoiceWallApp {
-            constructor() {
-                this.notes = [];
-                this.isRecording = false;
-                this.mediaRecorder = null;
-                this.audioChunks = [];
-                this.currentPeriod = 'day';
-                this.selectedLanguage = 'es'; // Default language
-                this.selectedPublishPeriod = 'day'; // Período donde se publicará
-                
-                // DOM elements
-                this.recordButton = document.getElementById('record-button');
-                this.audioUploadButton = document.getElementById('audio-upload-button');
-                this.videoUploadButton = document.getElementById('video-upload-button');
-                this.imageUploadButton = document.getElementById('image-upload-button');
-                this.textButton = document.getElementById('text-button');
-                this.urlButton = document.getElementById('url-button');
-                this.createButton = document.getElementById('create-button');
-                this.deleteButton = document.getElementById('delete-button');
-                this.statusText = document.getElementById('status-text');
-                this.voiceWall = document.getElementById('voice-wall');
-                this.emptyState = document.getElementById('empty-state');
-                this.headerButtons = document.querySelectorAll('.header-button');
-                this.languageMore = document.getElementById('language-more');
-                this.languageDropdown = document.getElementById('language-dropdown');
-                this.languageOptions = document.querySelectorAll('.language-option');
-                
-                // Selection state
-                this.selectionMode = false;
-                this.selectedNotes = new Set();
-                
-                // File inputs
+        class Teleprompter {
+            constructor(app) {
+                this.app = app;
+                this.panel = document.getElementById('teleprompter-panel');
+                this.display = document.getElementById('teleprompter-display');
+                this.laserCursor = document.getElementById('laser-cursor');
+                this.bgImageLayer = document.getElementById('bg-image-layer');
+                this.textContent = document.getElementById('teleprompter-text-content');
+                this.scriptEditor = document.getElementById('teleprompter-script-editor');
+                this.script = document.getElementById('teleprompter-script');
+                this.controls = document.getElementById('teleprompter-controls');
+                this.playBtn = document.getElementById('teleprompter-play-btn');
+                this.pauseBtn = document.getElementById('teleprompter-pause-btn');
+                this.stopBtn = document.getElementById('teleprompter-stop-btn');
+                this.drawer = document.getElementById('teleprompter-drawer');
+                this.bgColorPicker = document.getElementById('teleprompter-bg-color');
+                this.textColorPicker = document.getElementById('teleprompter-text-color');
+                this.textSizeSlider = document.getElementById('teleprompter-text-size');
+                this.textSizeDisplay = document.getElementById('teleprompter-text-size-display');
+                this.marginSlider = document.getElementById('teleprompter-margin');
+                this.marginDisplay = document.getElementById('teleprompter-margin-display');
+                this.speedSlider = document.getElementById('teleprompter-speed');
+                this.speedDisplay = document.getElementById('teleprompter-speed-display');
+
+                // Background selector elements
+                this.bgTabs = document.querySelectorAll('.bg-tab');
+                this.bgPanels = document.querySelectorAll('.bg-panel');
+                this.gradientPresets = document.querySelectorAll('.gradient-preset');
+                this.gradientColor1 = document.getElementById('gradient-color1');
+                this.gradientColor2 = document.getElementById('gradient-color2');
+                this.gradientAngle = document.getElementById('gradient-angle');
+                this.gradientAngleDisplay = document.getElementById('gradient-angle-display');
+                this.gradientApplyBtn = document.getElementById('gradient-apply-custom');
+                this.bgImageInput = document.getElementById('teleprompter-bg-image');
+                this.bgImagePreview = document.getElementById('bg-image-preview');
+                this.bgImagePlaceholder = document.getElementById('bg-image-placeholder');
+                this.bgImageFit = document.getElementById('bg-image-fit');
+                this.bgImageOpacity = document.getElementById('bg-image-opacity');
+                this.bgImageOpacityDisplay = document.getElementById('bg-image-opacity-display');
+
+                this.imageWrapperForScroll = document.getElementById('image-wrapper-for-scroll');
+
                 this.audioFileInput = document.getElementById('audio-file-input');
-                this.videoFileInput = document.getElementById('video-file-input');
-                this.imageFileInput = document.getElementById('image-file-input');
-                
-                // Modal forms
-                this.textForm = document.getElementById('text-form');
-                this.urlForm = document.getElementById('url-form');
-                
-                // Library filter system
-                this.currentFilter = 'all';
-                this.filterButtons = document.querySelectorAll('.filter-button');
-                
+                this.audioPlayer = document.getElementById('audio-player');
+                this.audioLoadedInfo = document.getElementById('audio-loaded-info');
+                this.audioRemoveBtn = document.getElementById('audio-remove-btn');
+
+                this.isPlaying = false;
+                this.isDrawerExpanded = false;
+                this.audioReady = false;
+
+                // Background state
+                this.bgMode = 'color';
+                this.bgImageData = null;
+                this.isPreRolling = false;
+
+
                 this.init();
             }
 
             init() {
-                // Publish button events
-                this.recordButton.addEventListener('click', () => this.toggleRecording());
-                this.audioUploadButton.addEventListener('click', () => this.triggerAudioUpload());
-                this.videoUploadButton.addEventListener('click', () => this.triggerVideoUpload());
-                this.imageUploadButton.addEventListener('click', () => this.triggerImageUpload());
-                this.textButton.addEventListener('click', () => this.openTextModal());
-                this.urlButton.addEventListener('click', () => this.openUrlModal());
-                this.createButton.addEventListener('click', () => this.openCreateModal());
-                this.deleteButton.addEventListener('click', () => this.toggleDeleteMode());
-                
-                // Period buttons
-                this.headerButtons.forEach(button => {
-                    button.addEventListener('click', (e) => this.changePeriod(e.target.dataset.period));
+                this.script.addEventListener('input', () => this.updateText());
+                this.playBtn.addEventListener('click', () => this.play());
+                this.pauseBtn.addEventListener('click', () => this.pause());
+                this.stopBtn.addEventListener('click', () => this.stop());
+
+                // Background tabs
+                this.bgTabs.forEach(tab => {
+                    tab.addEventListener('click', () => this.switchBgMode(tab.dataset.bgMode));
                 });
-                
-                // Language selector events
-                this.languageMore.addEventListener('click', () => this.toggleLanguageDropdown());
-                this.languageOptions.forEach(option => {
-                    option.addEventListener('click', (e) => this.selectLanguage(e.target));
+
+                // Solid color
+                this.bgColorPicker.addEventListener('input', () => this.applyBackground());
+
+                // Gradient presets
+                this.gradientPresets.forEach(preset => {
+                    preset.style.background = preset.dataset.gradient;
+                    preset.addEventListener('click', () => {
+                        this.gradientPresets.forEach(p => p.classList.remove('selected'));
+                        preset.classList.add('selected');
+                        this.display.style.backgroundImage = preset.dataset.gradient;
+                        this.display.style.backgroundColor = 'transparent';
+                    });
                 });
-                
-                // File input events
-                this.audioFileInput.addEventListener('change', (e) => this.handleAudioUpload(e));
-                this.videoFileInput.addEventListener('change', (e) => this.handleVideoUpload(e));
-                this.imageFileInput.addEventListener('change', (e) => this.handleImageUpload(e));
-                
-                // Modal form events
-                this.textForm.addEventListener('submit', (e) => this.handleTextSubmit(e));
-                this.urlForm.addEventListener('submit', (e) => this.handleUrlSubmit(e));
-                
-                // Library filter events
-                this.filterButtons.forEach(button => {
-                    button.addEventListener('click', (e) => this.changeFilter(e.target.dataset.filter));
+
+                // Custom gradient
+                this.gradientAngle.addEventListener('input', (e) => {
+                    this.gradientAngleDisplay.textContent = e.target.value;
                 });
+                this.gradientApplyBtn.addEventListener('click', () => this.applyCustomGradient());
+
+                // Image upload
+                this.bgImageInput.addEventListener('change', (e) => this.handleImageUpload(e));
+                this.bgImageFit.addEventListener('change', () => this.applyBackground());
                 
-                // Close dropdown when clicking outside
-                document.addEventListener('click', (e) => {
-                    if (!e.target.closest('.language-selector')) {
-                        this.languageDropdown.classList.remove('show');
+                // Hide opacity controls as they are no longer relevant with the new layout
+                this.bgImageOpacity.parentElement.style.display = 'none';
+
+                this.textColorPicker.addEventListener('input', (e) => this.textContent.style.color = e.target.value);
+                this.textSizeSlider.addEventListener('input', (e) => this.updateTextSize(e.target.value));
+                this.marginSlider.addEventListener('input', (e) => this.updateMargin(e.target.value));
+                this.speedSlider.addEventListener('input', (e) => this.updateSpeed(e.target.value));
+
+                document.getElementById('background-btn').addEventListener('click', () => {
+                    this.toggleDrawer();
+                });
+
+
+                this.updateText();
+                this.updateTextSize(this.textSizeSlider.value);
+                this.updateMargin(this.marginSlider.value);
+                this.updateSpeed(this.speedSlider.value);
+
+                // Audio
+                this.audioFileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    this.audioPlayer.src = URL.createObjectURL(file);
+                    this.audioLoadedInfo.style.display = '';
+                    this.audioReady = true;
+
+                    // Change speed slider to control playbackRate
+                    this.speedSlider.min = 5; // 0.5x
+                    this.speedSlider.max = 25; // 2.5x
+                    this.speedSlider.value = 10; // 1.0x
+                    this.updateSpeed(this.speedSlider.value);
+                });
+                this.audioRemoveBtn.addEventListener('click', () => {
+                    this.audioPlayer.pause();
+                    this.audioPlayer.src = '';
+                    this.audioLoadedInfo.style.display = 'none';
+                    this.audioReady = false;
+                    if (this.audioPlayer) {
+                        this.audioPlayer.playbackRate = 1.0;
                     }
+
+                    // Reset speed slider to manual mode
+                    this.speedSlider.min = 1;
+                    this.speedSlider.max = 50;
+                    this.speedSlider.value = 10;
+                    this.updateSpeed(this.speedSlider.value);
                 });
-                
-                // Close modals when clicking outside
-                document.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('modal-overlay')) {
-                        e.target.classList.remove('show');
-                    }
-                });
-                
-                this.loadNotes();
-                this.updateUI();
             }
 
-            changePeriod(period) {
-                this.currentPeriod = period;
-                this.selectedPublishPeriod = period; // Capturar período para publicación
+            updateText() {
+                this.textContent.innerHTML = this.script.value.replace(/\n/g, '<br>');
+            }
+
+            play() {
+                this.applyBackground();
+                this.isPlaying = true;
+                this.playBtn.style.display = 'none';
+                this.pauseBtn.style.display = '';
+                this.stopBtn.style.display = '';
+                this.scriptEditor.style.display = 'none';
+                this.controls.style.bottom = '0';
+                this.laserCursor.style.display = 'block';
                 
-                // Update active button
-                this.headerButtons.forEach(btn => btn.classList.remove('active'));
-                document.querySelector(`[data-period="${period}"]`).classList.add('active');
-                
-                console.log(`Switched to ${period} view - Publications will be sent to ${period} period`);
-                
-                // Update status text to show publishing period
-                if (!this.isRecording) {
-                    this.statusText.textContent = `Grabaciones se publicarán en: ${period.toUpperCase()}`;
+                // Push content down so it scrolls fully bottom-to-top
+                const displayH = this.display.clientHeight;
+                document.getElementById('scroll-spacer').style.height = displayH + 'px';
+                this.textContent.style.paddingTop = '0'; // No gap between image and text
+                this.textContent.style.paddingBottom = displayH + 'px';
+                this.display.style.overflowY = 'hidden';
+
+                this.animFrame = requestAnimationFrame((t) => this.scrollStep(t));
+
+                if (this.audioReady && this.audioPlayer.currentTime < 0.1) {
+                    // --- Starting fresh with audio: Start pre-roll ---
+                    this.isPreRolling = true;
+                    this.lastFrameTime = performance.now(); // Start timer for pre-roll scroll
+
                     setTimeout(() => {
-                        if (!this.isRecording) {
-                            this.statusText.textContent = 'Haz clic para grabar';
+                        if (this.isPlaying) {
+                            // --- Transition from Pre-roll to Audio-Sync ---
+                            const maxScroll = this.display.scrollHeight - this.display.clientHeight;
+                            if (maxScroll > 0 && this.audioPlayer.duration > 0) {
+                                const progress = this.display.scrollTop / maxScroll;
+                                const targetTime = progress * this.audioPlayer.duration;
+                                
+                                // Jump audio to match what's on screen
+                                if (targetTime < this.audioPlayer.duration) {
+                                    this.audioPlayer.currentTime = targetTime;
+                                }
+                            }
+                            
+                            this.audioPlayer.play();
+                            this.isPreRolling = false; // Switch to audio-driven scroll
                         }
-                    }, 3000);
-                }
-            }
-
-            // Filter management for library
-            changeFilter(filter) {
-                this.currentFilter = filter;
-                
-                // Update active filter button
-                this.filterButtons.forEach(btn => btn.classList.remove('active'));
-                document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
-                
-                // Update title and description based on filter
-                const titleElement = document.getElementById('playlist-title');
-                const descriptionElement = document.getElementById('playlist-description');
-                
-                switch(filter) {
-                    case 'all':
-                        titleElement.textContent = 'Mi Biblioteca';
-                        descriptionElement.textContent = 'Todos tus contenidos creados.';
-                        break;
-                    case 'drafts':
-                        titleElement.textContent = 'Borradores';
-                        descriptionElement.textContent = 'Contenidos guardados como borrador.';
-                        break;
-                    case 'published':
-                        titleElement.textContent = 'Publicados';
-                        descriptionElement.textContent = 'Contenidos publicados en salones.';
-                        break;
-                    case 'audio':
-                        titleElement.textContent = 'Audio';
-                        descriptionElement.textContent = 'Grabaciones y archivos de audio.';
-                        break;
-                    case 'videos':
-                        titleElement.textContent = 'Videos';
-                        descriptionElement.textContent = 'Archivos de video subidos.';
-                        break;
-                    case 'images':
-                        titleElement.textContent = 'Imágenes';
-                        descriptionElement.textContent = 'Imágenes y contenido visual.';
-                        break;
-                    case 'text':
-                        titleElement.textContent = 'Texto';
-                        descriptionElement.textContent = 'Contenido de texto y enlaces.';
-                        break;
-                }
-                
-                console.log(`📂 Filtro cambiado a: ${filter}`);
-                this.renderNotes();
-            }
-
-            // Get filtered notes based on current filter
-            getFilteredNotes() {
-                let filtered = [...this.notes];
-                
-                switch(this.currentFilter) {
-                    case 'drafts':
-                        filtered = this.notes.filter(note => note.isDraft && !note.isPublished);
-                        break;
-                    case 'published':
-                        filtered = this.notes.filter(note => note.isPublished);
-                        break;
-                    case 'audio':
-                        filtered = this.notes.filter(note => note.type === 'voice_recording' || note.type === 'audio_upload');
-                        break;
-                    case 'videos':
-                        filtered = this.notes.filter(note => note.type === 'video');
-                        break;
-                    case 'images':
-                        filtered = this.notes.filter(note => note.type === 'image');
-                        break;
-                    case 'text':
-                        filtered = this.notes.filter(note => note.type === 'text' || note.type === 'url');
-                        break;
-                    case 'all':
-                    default:
-                        // Return all notes
-                        break;
-                }
-                
-                return filtered;
-            }
-
-            toggleLanguageDropdown() {
-                this.languageDropdown.classList.toggle('show');
-            }
-
-
-            selectLanguage(optionElement) {
-                const lang = optionElement.dataset.lang;
-                const url = optionElement.dataset.url;
-                
-                // Save the selected language
-                this.selectedLanguage = lang;
-                
-                console.log(`Selected language: ${lang}`);
-                this.languageDropdown.classList.remove('show');
-                
-                if (url) {
-                    window.location.href = url;
-                }
-            }
-
-            async toggleRecording() {
-                if (!this.isRecording) {
-                    await this.startRecording();
+                    }, 5000); // 5-second delay
+                } else if (this.audioReady) {
+                    // --- Resuming from pause ---
+                    this.audioPlayer.play();
                 } else {
-                    this.stopRecording();
+                    // --- No audio ---
+                    this.lastFrameTime = performance.now();
                 }
             }
 
-            async startRecording() {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    this.mediaRecorder = new MediaRecorder(stream);
-                    this.audioChunks = [];
+            scrollStep(timestamp) {
+                if (!this.isPlaying) return;
 
-                    this.mediaRecorder.ondataavailable = (event) => {
-                        this.audioChunks.push(event.data);
-                    };
+                const maxScroll = this.display.scrollHeight - this.display.clientHeight;
 
-                    this.mediaRecorder.onstop = () => {
-                        const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
-                        this.addNote({
-                            type: 'voice_recording',
-                            audioUrl: URL.createObjectURL(audioBlob)
-                        });
-                        stream.getTracks().forEach(track => track.stop());
-                    };
+                // Use audio-driven scroll ONLY if audio is ready AND we are past the pre-roll phase.
+                if (this.audioReady && this.audioPlayer.duration > 0 && !this.isPreRolling) {
+                    // --- AUDIO-DRIVEN SCROLL ---
+                    const audioProgress = this.audioPlayer.currentTime / this.audioPlayer.duration;
+                    this.display.scrollTop = audioProgress * maxScroll;
 
-                    this.mediaRecorder.start();
-                    this.isRecording = true;
-                    
-                    this.recordButton.classList.add('recording');
-                    this.recordButton.textContent = '⏹️';
-                    this.statusText.textContent = 'Grabando...';
-                } catch (error) {
-                    console.error('Error al acceder al micrófono:', error);
-                    this.statusText.textContent = 'Acceso al micrófono denegado';
-                }
-            }
-
-            stopRecording() {
-                if (this.mediaRecorder && this.isRecording) {
-                    this.mediaRecorder.stop();
-                    this.isRecording = false;
-                    
-                    this.recordButton.classList.remove('recording');
-                    this.recordButton.textContent = '🎤';
-                    this.statusText.textContent = 'Elige qué tipo de contenido quieres publicar';
-                }
-            }
-
-            // File upload triggers
-            triggerAudioUpload() {
-                this.audioFileInput.click();
-            }
-
-            triggerVideoUpload() {
-                this.videoFileInput.click();
-            }
-
-            triggerImageUpload() {
-                this.imageFileInput.click();
-            }
-
-            // Modal handlers
-            openTextModal() {
-                document.getElementById('text-modal').classList.add('show');
-                document.getElementById('text-title').focus();
-            }
-
-            openUrlModal() {
-                document.getElementById('url-modal').classList.add('show');
-                document.getElementById('url-input').focus();
-            }
-
-            openCreateModal() {
-                document.getElementById('create-modal').classList.add('show');
-            }
-
-            toggleDeleteMode() {
-                this.selectionMode = !this.selectionMode;
-                
-                if (this.selectionMode) {
-                    this.deleteButton.classList.add('active');
-                    this.voiceWall.classList.add('selection-mode');
-                    this.statusText.textContent = 'Usa los checkboxes para seleccionar las publicaciones que deseas eliminar';
-                    this.updateDeleteCounter();
-                    this.addSelectAllButton();
+                    // Stop when audio ends.
+                    if (this.audioPlayer.ended) {
+                        this.stop();
+                        return;
+                    }
                 } else {
-                    this.exitDeleteMode();
-                }
-            }
+                    // --- TIME-DRIVEN SCROLL (Used for No-Audio mode AND Pre-roll) ---
+                    const delta = timestamp - this.lastFrameTime;
+                    this.lastFrameTime = timestamp;
+                    const pxPerSec = parseInt(this.speedSlider.value) * 3;
+                    this.display.scrollTop += pxPerSec * (delta / 1000);
 
-            addSelectAllButton() {
-                const existingBtn = document.querySelector('.select-all-btn');
-                if (existingBtn) return;
-
-                const selectAllBtn = document.createElement('button');
-                selectAllBtn.className = 'modal-button secondary select-all-btn';
-                selectAllBtn.textContent = 'Seleccionar Todo';
-                selectAllBtn.style.cssText = `
-                    position: fixed;
-                    bottom: 200px;
-                    right: 2rem;
-                    z-index: 999;
-                    animation: slideIn 0.3s ease;
-                `;
-                
-                selectAllBtn.addEventListener('click', () => this.selectAllNotes());
-                document.body.appendChild(selectAllBtn);
-            }
-
-            selectAllNotes() {
-                const allCheckboxes = document.querySelectorAll('.selection-checkbox');
-                const allChecked = Array.from(allCheckboxes).every(cb => cb.checked);
-                
-                allCheckboxes.forEach(checkbox => {
-                    const noteId = parseInt(checkbox.dataset.noteId);
-                    
-                    if (allChecked) {
-                        // Unselect all
-                        checkbox.checked = false;
-                        checkbox.closest('.voice-post').classList.remove('selected');
-                        this.selectedNotes.delete(noteId);
-                    } else {
-                        // Select all
-                        checkbox.checked = true;
-                        checkbox.closest('.voice-post').classList.add('selected');
-                        this.selectedNotes.add(noteId);
+                    // Stop when all text has scrolled off screen
+                    if (this.display.scrollTop >= maxScroll) {
+                        this.stop();
+                        return;
                     }
-                });
-                
-                this.updateDeleteCounter();
-                
-                // Update button text
-                const selectAllBtn = document.querySelector('.select-all-btn');
-                if (selectAllBtn) {
-                    selectAllBtn.textContent = allChecked ? 'Seleccionar Todo' : 'Deseleccionar Todo';
                 }
-                
-                // Add/remove delete button based on selection
-                if (this.selectedNotes.size > 0 && !document.querySelector('.delete-selected-btn')) {
-                    this.addDeleteSelectedButton();
-                } else if (this.selectedNotes.size === 0) {
-                    this.removeDeleteSelectedButton();
+
+                // Continue the animation loop
+                this.animFrame = requestAnimationFrame((t) => this.scrollStep(t));
+            }
+
+            pause() {
+                this.isPlaying = false;
+                this.playBtn.style.display = '';
+                this.pauseBtn.style.display = 'none';
+                this.stopBtn.style.display = '';
+                cancelAnimationFrame(this.animFrame);
+                if (this.audioReady) this.audioPlayer.pause();
+            }
+
+            stop() {
+                this.isPlaying = false;
+                this.isPreRolling = false;
+                cancelAnimationFrame(this.animFrame);
+                this.display.scrollTop = 0;
+                document.getElementById('scroll-spacer').style.height = '1rem';
+                this.textContent.style.paddingTop = '0';
+                this.textContent.style.paddingBottom = '0';
+                this.laserCursor.style.display = 'none';
+                this.display.style.overflowY = 'hidden';
+                this.scriptEditor.style.display = '';
+                this.controls.style.bottom = '200px';
+                this.playBtn.style.display = '';
+                this.pauseBtn.style.display = 'none';
+                this.stopBtn.style.display = 'none';
+                if (this.audioReady) {
+                    this.audioPlayer.pause();
+                    this.audioPlayer.currentTime = 0;
                 }
             }
 
-            removeSelectAllButton() {
-                const btn = document.querySelector('.select-all-btn');
-                if (btn) {
-                    btn.remove();
-                }
+            toggleDrawer() {
+                this.isDrawerExpanded = !this.isDrawerExpanded;
+                this.drawer.classList.toggle('expanded');
             }
 
-            exitDeleteMode() {
-                this.selectionMode = false;
-                this.selectedNotes.clear();
-                this.deleteButton.classList.remove('active');
-                this.voiceWall.classList.remove('selection-mode');
-                this.statusText.textContent = 'Elige qué tipo de contenido quieres publicar';
-                this.updateDeleteCounter();
-                this.removeDeleteSelectedButton();
-                this.removeSelectAllButton();
-                
-                // Remove selection from all posts and uncheck checkboxes
-                document.querySelectorAll('.voice-post.selected').forEach(post => {
-                    post.classList.remove('selected');
-                    const checkbox = post.querySelector('.selection-checkbox');
-                    if (checkbox) {
-                        checkbox.checked = false;
+            updateTextSize(size) {
+                this.textContent.style.fontSize = `${size}px`;
+                this.textSizeDisplay.textContent = size;
+            }
+
+            updateMargin(margin) {
+                this.display.style.padding = `0 ${margin}%`;
+                this.marginDisplay.textContent = margin;
+            }
+
+            updateSpeed(speed) {
+                if (this.audioReady) {
+                    const playbackRate = parseFloat(speed) / 10;
+                    this.speedDisplay.textContent = `${playbackRate.toFixed(1)}x`;
+                    if (this.audioPlayer) {
+                        this.audioPlayer.playbackRate = playbackRate;
                     }
-                });
-            }
-
-
-            updateDeleteCounter() {
-                const existingCounter = document.querySelector('.selection-counter');
-                if (existingCounter) {
-                    existingCounter.remove();
-                }
-                
-                if (this.selectionMode && this.selectedNotes.size > 0) {
-                    const counter = document.createElement('div');
-                    counter.className = 'selection-counter';
-                    counter.textContent = this.selectedNotes.size;
-                    this.deleteButton.style.position = 'relative';
-                    this.deleteButton.appendChild(counter);
-                }
-            }
-
-            deleteSelectedNotes() {
-                if (this.selectedNotes.size === 0) {
-                    alert('No hay publicaciones seleccionadas para eliminar.');
-                    return;
-                }
-
-                const count = this.selectedNotes.size;
-                const confirmMessage = `¿Estás seguro de que quieres eliminar ${count} publicación${count > 1 ? 'es' : ''}?`;
-                
-                if (confirm(confirmMessage)) {
-                    // Remove selected notes from the array
-                    this.notes = this.notes.filter(note => !this.selectedNotes.has(note.id));
-                    
-                    // Save and re-render
-                    this.saveNotes();
-                    this.renderNotes();
-                    this.updateUI();
-                    
-                    // Exit delete mode
-                    this.exitDeleteMode();
-                    
-                    this.statusText.textContent = `${count} publicación${count > 1 ? 'es' : ''} eliminada${count > 1 ? 's' : ''} correctamente`;
-                    setTimeout(() => {
-                        this.statusText.textContent = 'Elige qué tipo de contenido quieres publicar';
-                    }, 3000);
-                }
-            }
-
-            // File upload handlers
-            handleAudioUpload(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-
-                if (file.size > 10 * 1024 * 1024) { // 10MB limit
-                    alert('El archivo de audio es demasiado grande. Máximo 10MB.');
-                    return;
-                }
-
-                const audioUrl = URL.createObjectURL(file);
-                this.addNote({
-                    type: 'audio_upload',
-                    audioUrl: audioUrl,
-                    fileName: file.name,
-                    fileSize: file.size
-                });
-
-                // Reset input
-                event.target.value = '';
-            }
-
-            handleVideoUpload(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-
-                if (file.size > 50 * 1024 * 1024) { // 50MB limit
-                    alert('El video es demasiado grande. Máximo 50MB.');
-                    return;
-                }
-
-                const videoUrl = URL.createObjectURL(file);
-                this.addNote({
-                    type: 'video',
-                    videoUrl: videoUrl,
-                    fileName: file.name,
-                    fileSize: file.size
-                });
-
-                // Reset input
-                event.target.value = '';
-            }
-
-            handleImageUpload(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-
-                if (file.size > 5 * 1024 * 1024) { // 5MB limit
-                    alert('La imagen es demasiado grande. Máximo 5MB.');
-                    return;
-                }
-
-                const imageUrl = URL.createObjectURL(file);
-                this.addNote({
-                    type: 'image',
-                    imageUrl: imageUrl,
-                    fileName: file.name,
-                    fileSize: file.size
-                });
-
-                // Reset input
-                event.target.value = '';
-            }
-
-            // Form submit handlers
-            handleTextSubmit(event) {
-                event.preventDefault();
-                
-                const title = document.getElementById('text-title').value.trim();
-                const content = document.getElementById('text-content').value.trim();
-                
-                if (!content) {
-                    alert('Por favor escribe algo de contenido.');
-                    return;
-                }
-
-                this.addNote({
-                    type: 'text',
-                    title: title || 'Nota de texto',
-                    content: content
-                });
-
-                // Clear form and close modal
-                document.getElementById('text-title').value = '';
-                document.getElementById('text-content').value = '';
-                closeModal('text-modal');
-            }
-
-            handleUrlSubmit(event) {
-                event.preventDefault();
-                
-                const url = document.getElementById('url-input').value.trim();
-                const title = document.getElementById('url-title').value.trim();
-                const description = document.getElementById('url-description').value.trim();
-                
-                if (!url) {
-                    alert('Por favor ingresa una URL válida.');
-                    return;
-                }
-
-                this.addNote({
-                    type: 'url',
-                    url: url,
-                    title: title || url,
-                    description: description
-                });
-
-                // Clear form and close modal
-                document.getElementById('url-input').value = '';
-                document.getElementById('url-title').value = '';
-                document.getElementById('url-description').value = '';
-                closeModal('url-modal');
-            }
-
-            // Generate unique cardID
-            generateCardID() {
-                const userID = this.getUserID();
-                const timestamp = Date.now();
-                const random = Math.random().toString(36).substr(2, 6);
-                return `card_${userID}_${timestamp}_${random}`;
-            }
-
-            // Get or create userID
-            getUserID() {
-                let userID = localStorage.getItem('grafiter_userID');
-                if (!userID) {
-                    userID = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                    localStorage.setItem('grafiter_userID', userID);
-                }
-                return userID;
-            }
-
-            addNote(noteData) {
-                const note = {
-                    id: Date.now(),
-                    cardID: this.generateCardID(),
-                    userID: this.getUserID(),
-                    timestamp: this.getTimestampForPeriod(this.selectedPublishPeriod),
-                    language: this.getCurrentLanguage(),
-                    publishPeriod: this.selectedPublishPeriod,
-                    isPublished: false, // Default: not published, stays in personal library
-                    isDraft: true,      // Default: is a draft
-                    createdAt: new Date(),
-                    ...noteData
-                };
-
-                this.notes.unshift(note);
-                this.saveNotes();
-                this.renderNotes();
-                this.updateUI();
-
-                console.log(`🆔 Nueva card creada: ${note.cardID} | UserID: ${note.userID}`);
-                
-                // Generar página individual para la publicación
-                this.generateIndividualPage(note);
-                
-                // No se envía automáticamente al salón, queda en biblioteca personal
-                // this.sendToLanguagePage(note); // Comentado - solo se envía si el usuario decide publicar
-            }
-
-            generateIndividualPage(note) {
-                const pageContent = this.createPublicationHTML(note);
-                const fileName = `${note.cardID}.html`;
-                
-                // En una aplicación real, esto se haría en el servidor
-                // Por ahora solo generamos el contenido y lo guardamos en localStorage para simulación
-                localStorage.setItem(`publication_${note.cardID}`, pageContent);
-                
-                console.log(`📄 Página individual generada: ${fileName}`);
-            }
-
-            createPublicationHTML(note) {
-                const country = this.getCountryByLanguage(note.language);
-                const formattedDate = note.timestamp.toLocaleDateString();
-                const formattedTime = note.timestamp.toLocaleTimeString(undefined, {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-
-                let mainContent = '';
-                switch (note.type) {
-                    case 'text':
-                        mainContent = `
-                            <div class="publication-content">
-                                <h1 class="publication-title">${note.title}</h1>
-                                <div class="publication-text">${note.content}</div>
-                            </div>
-                        `;
-                        break;
-                    case 'video':
-                        mainContent = `
-                            <div class="publication-content">
-                                <h1 class="publication-title">Video #${note.id}</h1>
-                                <div class="publication-video">
-                                    <video src="${note.videoUrl}" controls style="max-width: 100%; border-radius: 8px;">
-                                        Tu navegador no soporta el elemento video.
-                                    </video>
-                                </div>
-                                <div class="publication-meta">Archivo: ${note.fileName} (${this.formatFileSize(note.fileSize)})</div>
-                            </div>
-                        `;
-                        break;
-                    case 'image':
-                        mainContent = `
-                            <div class="publication-content">
-                                <h1 class="publication-title">Imagen #${note.id}</h1>
-                                <div class="publication-image">
-                                    <img src="${note.imageUrl}" alt="Imagen publicada" style="max-width: 100%; border-radius: 8px;">
-                                </div>
-                                <div class="publication-meta">Archivo: ${note.fileName} (${this.formatFileSize(note.fileSize)})</div>
-                            </div>
-                        `;
-                        break;
-                    case 'url':
-                        mainContent = `
-                            <div class="publication-content">
-                                <h1 class="publication-title">${note.title}</h1>
-                                <div class="publication-url">
-                                    <a href="${note.url}" target="_blank">${note.url}</a>
-                                </div>
-                                ${note.description ? `<div class="publication-description">${note.description}</div>` : ''}
-                            </div>
-                        `;
-                        break;
-                    case 'audio_upload':
-                        mainContent = `
-                            <div class="publication-content">
-                                <h1 class="publication-title">Audio #${note.id}</h1>
-                                <div class="publication-audio">
-                                    <audio src="${note.audioUrl}" controls style="width: 100%;">
-                                        Tu navegador no soporta el elemento audio.
-                                    </audio>
-                                </div>
-                                <div class="publication-meta">Archivo: ${note.fileName} (${this.formatFileSize(note.fileSize)})</div>
-                            </div>
-                        `;
-                        break;
-                    default:
-                        mainContent = `
-                            <div class="publication-content">
-                                <h1 class="publication-title">Publicación #${note.id}</h1>
-                                <div class="publication-meta">Contenido multimedia</div>
-                            </div>
-                        `;
-                }
-
-                return `<!DOCTYPE html>
-<html lang="${note.language || 'es'}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Publicación ${note.cardID} - GRAFITER</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0a0a0f;
-            color: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .header {
-            padding: 1rem 2rem;
-            background: rgba(10, 10, 15, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .header h1 {
-            background: linear-gradient(to right, #FFA500, #FFD700, #FFFF00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .publication-container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .publication-meta-info {
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.7);
-        }
-        .publication-title {
-            color: #FFA500;
-            margin-bottom: 1rem;
-        }
-        .publication-text, .publication-description {
-            line-height: 1.6;
-            margin: 1rem 0;
-        }
-        .publication-url a {
-            color: #FFA500;
-            text-decoration: none;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            display: block;
-            margin: 1rem 0;
-        }
-        .publication-url a:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .publication-meta {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.875rem;
-            margin-top: 1rem;
-        }
-        .back-button {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 0.5rem;
-            color: white;
-            text-decoration: none;
-            margin-bottom: 1rem;
-        }
-        .back-button:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-    </style>
-</head>
-<body>
-    <header class="header">
-        <h1>GRAFITER</h1>
-    </header>
-    
-    <main class="publication-container">
-        <a href="../SALONES/${note.language}.html" class="back-button">← Volver al Salón</a>
-        
-        <div class="publication-meta-info">
-            <div>Publicado por Usuario ${country}</div>
-            <div>${formattedDate} a las ${formattedTime}</div>
-            <div>ID: ${note.cardID}</div>
-        </div>
-        
-        ${mainContent}
-    </main>
-</body>
-</html>`;
-            }
-
-            getTimestampForPeriod(period) {
-                const now = new Date();
-                
-                switch(period) {
-                    case 'day':
-                        // Para día: timestamp actual (últimas 24 horas)
-                        return now;
-                    case 'week':
-                        // Para semana: timestamp de 2-6 días atrás
-                        const daysAgoWeek = 2 + Math.random() * 4; // Entre 2-6 días
-                        return new Date(now.getTime() - (daysAgoWeek * 24 * 60 * 60 * 1000));
-                    case 'month':
-                        // Para mes: timestamp de 8-25 días atrás
-                        const daysAgoMonth = 8 + Math.random() * 17; // Entre 8-25 días
-                        return new Date(now.getTime() - (daysAgoMonth * 24 * 60 * 60 * 1000));
-                    default:
-                        return now;
-                }
-            }
-
-            getCurrentLanguage() {
-                // Get the currently selected language from the last user interaction
-                // Default to 'es' if none selected
-                return this.selectedLanguage || 'es';
-            }
-
-            getCountryByLanguage() {
-                // Try to detect country based on URL or default mapping
-                const url = window.location.href;
-                if (url.includes('/es.html')) return 'ES';
-                if (url.includes('/us.html')) return 'US';
-                if (url.includes('/it.html')) return 'IT';
-                
-                // Default to ES (Spain)
-                return 'ES';
-            }
-
-            getLanguageUrl(lang) {
-                const urls = {
-                    'es': '../SALONES/es.html',
-                    'us': '../SALONES/us.html', 
-                    'it': '../SALONES/it.html',
-                };
-                return urls[lang] || urls['es'];
-            }
-
-            getLanguageFlag(lang) {
-                const flags = {
-                    'es': '🇪🇸',
-                    'us': '🇺🇸',
-                    'it': '🇮🇹', 
-                };
-                return flags[lang] || flags['es'];
-            }
-
-            // Calculate expiration date based on publish period  
-            calculateExpirationDate(publishPeriod, timestamp) {
-                const startDate = new Date(timestamp);
-                const expirationDate = new Date(startDate);
-                
-                switch(publishPeriod) {
-                    case 'day':
-                        expirationDate.setHours(expirationDate.getHours() + 24);
-                        break;
-                    case 'week':
-                        expirationDate.setDate(expirationDate.getDate() + 7);
-                        break;
-                    case 'month':
-                        expirationDate.setDate(expirationDate.getDate() + 30);
-                        break;
-                    default:
-                        expirationDate.setHours(expirationDate.getHours() + 24);
-                }
-                
-                return expirationDate;
-            }
-
-            // Generate unique user ID (same as salons)
-            generateUserID() {
-                let userID = localStorage.getItem('grafiter_userID');
-                if (!userID) {
-                    userID = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                    localStorage.setItem('grafiter_userID', userID);
-                }
-                return userID;
-            }
-
-            sendToLanguagePage(note) {
-                try {
-                    const language = note.language;
-                    const country = this.getCountryByLanguage();
-                    const period = note.publishPeriod;
-                    
-                    // Calculate expiration date
-                    const expirationDate = this.calculateExpirationDate(period, note.timestamp);
-                    
-                    // Generate or get userID
-                    const userID = this.generateUserID();
-                    
-                    // Crear un objeto de publicación para enviar al SALON
-                    const publicationData = {
-                        id: note.id,
-                        timestamp: note.timestamp,
-                        expirationDate: expirationDate,
-                        language: language,
-                        country: country,
-                        publishPeriod: period,
-                        type: note.type || 'voice_recording',
-                        title: note.title,
-                        content: note.content,
-                        url: note.url,
-                        description: note.description,
-                        fileName: note.fileName,
-                        fileSize: note.fileSize,
-                        userID: userID,
-                        cancelled: false,
-                        audioUrl: null // No enviamos el audio por seguridad
-                    };
-
-                    // Obtener publicaciones existentes del idioma correspondiente
-                    const storageKey = `voiceNotes_${language}`;
-                    let existingPosts = [];
-                    
-                    try {
-                        const saved = localStorage.getItem(storageKey);
-                        if (saved) {
-                            existingPosts = JSON.parse(saved);
-                        }
-                    } catch (error) {
-                        console.error('Error loading existing posts:', error);
-                        existingPosts = [];
-                    }
-
-                    // Agregar la nueva publicación al principio
-                    existingPosts.unshift(publicationData);
-
-                    // Ordenar por timestamp para mantener orden cronológico
-                    existingPosts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-                    // Guardar en localStorage del idioma correspondiente
-                    localStorage.setItem(storageKey, JSON.stringify(existingPosts));
-                    
-                    console.log(`Publicación enviada a SALON ${language.toUpperCase()} - PERIODO ${period.toUpperCase()}:`, publicationData);
-                    
-                    // Mostrar confirmación al usuario con información del período
-                    this.statusText.textContent = `¡Publicado en ${language.toUpperCase()} (${period.toUpperCase()})! Visita el salón para verlo.`;
-                    setTimeout(() => {
-                        this.statusText.textContent = 'Haz clic para grabar';
-                    }, 4000);
-
-                } catch (error) {
-                    console.error('Error enviando publicación al SALON:', error);
-                }
-            }
-
-            renderNotes() {
-                this.voiceWall.innerHTML = '';
-                
-                // Use filtered notes instead of all notes
-                const filteredNotes = this.getFilteredNotes();
-                
-                filteredNotes.forEach((note, index) => {
-                    const postElement = document.createElement('div');
-                    postElement.className = 'voice-post';
-                    postElement.dataset.noteId = note.id;
-
-                    const country = this.getCountryByLanguage();
-                    
-                    const formattedDate = note.timestamp.toLocaleDateString(undefined, {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                    });
-                    
-                    const formattedTime = note.timestamp.toLocaleTimeString(undefined, {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-
-                    const noteLanguage = note.language || 'es';
-                    const languageFlag = this.getLanguageFlag(noteLanguage);
-                    const languageUrl = this.getLanguageUrl(noteLanguage);
-
-                    // Generate content based on note type
-                    const contentHtml = this.generateNoteContent(note, index);
-                    const actionsHtml = this.generateNoteActions(note);
-
-                    postElement.innerHTML = `
-                        <div class="post-header">
-                            <div class="post-selection">
-                                <input type="checkbox" class="selection-checkbox" id="checkbox-${note.id}" data-note-id="${note.id}" style="display: none;">
-                                <label for="checkbox-${note.id}" class="selection-label">
-                                    <span class="checkbox-custom"></span>
-                                </label>
-                            </div>
-                            <div class="user-avatar">${this.getContentTypeIcon(note.type)}</div>
-                            <div class="post-user-info">
-                                <div class="post-username">Usuario ${country}</div>
-                                <div class="post-timestamp">${formattedDate} • ${formattedTime}</div>
-                            </div>
-                            <button class="language-button" data-url="${languageUrl}" title="Ir a página ${noteLanguage.toUpperCase()}">
-                                ${languageFlag}
-                            </button>
-                        </div>
-                        
-                        ${contentHtml}
-                        
-                        ${actionsHtml}
-                    `;
-                    
-                    // Add event listeners based on content type
-                    this.addNoteEventListeners(note, postElement);
-                    
-                    this.voiceWall.appendChild(postElement);
-                });
-            }
-
-            getContentTypeIcon(type) {
-                const icons = {
-                    'audio_upload': '🎵',
-                    'video': '🎥',
-                    'image': '🖼️',
-                    'text': '📝',
-                    'url': '🔗',
-                    'voice_recording': '🎤'
-                };
-                return icons[type] || '🎤';
-            }
-
-            generateNoteContent(note, index) {
-                const country = this.getCountryByLanguage();
-                const formattedDate = note.timestamp.toLocaleDateString();
-                const formattedTime = note.timestamp.toLocaleTimeString(undefined, {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-
-                switch (note.type) {
-                    case 'text':
-                        return `
-                            <div class="post-content">
-                                <div class="post-title">${note.title}</div>
-                                <div class="post-description">${note.content}</div>
-                            </div>
-                        `;
-                    
-                    case 'video':
-                        return `
-                            <div class="post-content">
-                                <div class="post-title">Video #${this.notes.length - index}</div>
-                                <div class="post-video" style="margin: 1rem 0;">
-                                    <video src="${note.videoUrl}" controls style="max-width: 100%; border-radius: 8px;">
-                                        Tu navegador no soporta el elemento video.
-                                    </video>
-                                </div>
-                                <div class="post-description">Archivo: ${note.fileName} (${this.formatFileSize(note.fileSize)})</div>
-                            </div>
-                        `;
-                    
-                    case 'image':
-                        return `
-                            <div class="post-content">
-                                <div class="post-title">Imagen #${this.notes.length - index}</div>
-                                <div class="post-image" style="margin: 1rem 0;">
-                                    <img src="${note.imageUrl}" alt="Imagen subida" style="max-width: 100%; border-radius: 8px; cursor: pointer;" onclick="window.open('${note.imageUrl}', '_blank')">
-                                </div>
-                                <div class="post-description">Archivo: ${note.fileName} (${this.formatFileSize(note.fileSize)})</div>
-                            </div>
-                        `;
-                    
-                    case 'url':
-                        return `
-                            <div class="post-content">
-                                <div class="post-title">${note.title}</div>
-                                <div class="post-url" style="margin: 0.5rem 0; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px; border-left: 3px solid var(--accent-base);">
-                                    <a href="${note.url}" target="_blank" style="color: var(--accent-base); text-decoration: none; font-weight: bold;">${note.url}</a>
-                                </div>
-                                ${note.description ? `<div class="post-description">${note.description}</div>` : ''}
-                            </div>
-                        `;
-                    
-                    case 'audio_upload':
-                        return `
-                            <div class="post-content">
-                                <div class="post-title">Audio #${this.notes.length - index}</div>
-                                <div class="post-description">Archivo de audio: ${note.fileName} (${this.formatFileSize(note.fileSize)})</div>
-                            </div>
-                        `;
-                    
-                    default: // voice_recording
-                        return `
-                            <div class="post-content">
-                                <div class="post-title">Nota de Voz ${country} #${this.notes.length - index}</div>
-                                <div class="post-description">Grabación de audio realizada el ${formattedDate} a las ${formattedTime}</div>
-                            </div>
-                        `;
-                }
-            }
-
-            generateNoteActions(note) {
-                const hasAudio = note.audioUrl || note.type === 'audio_upload';
-                
-                // Status indicator
-                let statusIndicator = '';
-                if (note.isPublished) {
-                    statusIndicator = '<div class="published-indicator">Publicado</div>';
-                } else if (note.isDraft) {
-                    statusIndicator = '<div class="draft-indicator">Borrador</div>';
-                }
-                
-                // Action buttons based on status
-                let actionButtons = '';
-                if (note.isDraft && !note.isPublished) {
-                    actionButtons = `
-                        <button class="publish-button" data-card-id="${note.cardID}" data-note-id="${note.id}">
-                            🚀 Publicar
-                        </button>
-                    `;
-                } else if (note.isPublished) {
-                    actionButtons = `
-                        <button class="cancel-publication-button" data-card-id="${note.cardID}" data-note-id="${note.id}">
-                            ❌ Cancelar Publicación
-                        </button>
-                    `;
-                }
-                
-                // Card metadata
-                const metadata = `
-                    <div class="card-metadata">
-                        <div><strong>Card ID:</strong> <span class="card-id">${note.cardID}</span></div>
-                        <div><strong>Usuario:</strong> ${note.userID}</div>
-                        <div><strong>Creado:</strong> ${note.createdAt ? new Date(note.createdAt).toLocaleString() : 'N/A'}</div>
-                    </div>
-                `;
-                
-                if (note.type === 'text' || note.type === 'url') {
-                    return `
-                        ${statusIndicator}
-                        <div class="post-actions">
-                            <div class="play-control">
-                                <span style="color: var(--text-subdued); font-size: 0.9rem;">Contenido de solo lectura</span>
-                            </div>
-                            ${actionButtons}
-                        </div>
-                        ${metadata}
-                    `;
-                }
-
-                return `
-                    ${statusIndicator}
-                    <div class="post-actions">
-                        <div class="play-control">
-                            <button class="play-button">${hasAudio ? '▶' : '🔒'}</button>
-                            <div class="wave-indicator">
-                                <div class="wave-bar"></div>
-                                <div class="wave-bar"></div>
-                                <div class="wave-bar"></div>
-                                <div class="wave-bar"></div>
-                                <div class="wave-bar"></div>
-                            </div>
-                            ${!hasAudio ? '<span class="unavailable-text">Audio no disponible</span>' : ''}
-                        </div>
-                        ${actionButtons}
-                    </div>
-                    ${metadata}
-                `;
-            }
-
-            addNoteEventListeners(note, postElement) {
-                // Language button
-                const languageButton = postElement.querySelector('.language-button');
-                if (languageButton) {
-                    languageButton.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const url = e.target.dataset.url;
-                        if (url) {
-                            window.location.href = url;
-                        }
-                    });
-                }
-
-                // Play button (for audio content)
-                const playButton = postElement.querySelector('.play-button');
-                if (playButton) {
-                    playButton.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        this.playNote(note, postElement);
-                    });
-                }
-
-                // Publish button
-                const publishButton = postElement.querySelector('.publish-button');
-                if (publishButton) {
-                    publishButton.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const cardID = e.target.dataset.cardId;
-                        const noteId = e.target.dataset.noteId;
-                        this.publishNote(noteId, cardID);
-                    });
-                }
-
-                // Cancel publication button
-                const cancelButton = postElement.querySelector('.cancel-publication-button');
-                if (cancelButton) {
-                    cancelButton.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const cardID = e.target.dataset.cardId;
-                        const noteId = e.target.dataset.noteId;
-                        this.cancelPublication(noteId, cardID);
-                    });
-                }
-
-                // Checkbox selection for delete mode
-                const checkbox = postElement.querySelector('.selection-checkbox');
-                if (checkbox) {
-                    checkbox.addEventListener('change', (e) => {
-                        const isChecked = e.target.checked;
-                        
-                        if (isChecked) {
-                            postElement.classList.add('selected');
-                            this.selectedNotes.add(note.id);
-                        } else {
-                            postElement.classList.remove('selected');
-                            this.selectedNotes.delete(note.id);
-                        }
-                        
-                        this.updateDeleteCounter();
-                        
-                        // Add/remove delete button based on selection
-                        if (this.selectedNotes.size > 0 && !document.querySelector('.delete-selected-btn')) {
-                            this.addDeleteSelectedButton();
-                        } else if (this.selectedNotes.size === 0) {
-                            this.removeDeleteSelectedButton();
-                        }
-                    });
-                }
-            }
-
-            // Publish note to salon
-            publishNote(noteId, cardID) {
-                const note = this.notes.find(n => n.id == noteId);
-                if (!note) {
-                    console.error('Nota no encontrada:', noteId);
-                    return;
-                }
-
-                // Update note status
-                note.isPublished = true;
-                note.isDraft = false;
-                note.publishedAt = new Date();
-
-                console.log(`🚀 Publicando card: ${cardID} | UserID: ${note.userID}`);
-                
-                // Send to language page (salon)
-                this.sendToLanguagePage(note);
-                
-                // Save changes
-                this.saveNotes();
-                this.renderNotes();
-                
-                // Show success message
-                this.statusText.textContent = `Card ${cardID} publicada en ${note.language.toUpperCase()} - ${note.publishPeriod}`;
-                setTimeout(() => {
-                    this.statusText.textContent = 'Elige qué tipo de contenido quieres publicar';
-                }, 4000);
-            }
-
-            // Cancel publication and remove from salon
-            cancelPublication(noteId, cardID) {
-                const note = this.notes.find(n => n.id == noteId);
-                if (!note) {
-                    console.error('Nota no encontrada:', noteId);
-                    return;
-                }
-
-                // Update note status
-                note.isPublished = false;
-                note.isDraft = true;
-                note.publishedAt = null;
-                note.cancelled = true;
-
-                console.log(`❌ Cancelando publicación: ${cardID} | UserID: ${note.userID}`);
-                
-                // Save changes
-                this.saveNotes();
-                this.renderNotes();
-                
-                // Show success message
-                this.statusText.textContent = `Publicación cancelada: ${cardID} - Eliminada del salón`;
-                setTimeout(() => {
-                    this.statusText.textContent = 'Elige qué tipo de contenido quieres publicar';
-                }, 4000);
-                
-                // NOTE: The salon will automatically clean expired/cancelled notes
-                // through the TTL and cancellation system already implemented
-            }
-
-            addDeleteSelectedButton() {
-                const existingBtn = document.querySelector('.delete-selected-btn');
-                if (existingBtn) return;
-
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'modal-button primary delete-selected-btn';
-                deleteBtn.textContent = 'Eliminar Seleccionados';
-                deleteBtn.style.cssText = `
-                    position: fixed;
-                    bottom: 150px;
-                    right: 2rem;
-                    z-index: 999;
-                    background: linear-gradient(135deg, #ff4757, #ff3838);
-                    animation: slideIn 0.3s ease;
-                `;
-                
-                deleteBtn.addEventListener('click', () => this.deleteSelectedNotes());
-                document.body.appendChild(deleteBtn);
-
-                // Add animation
-                const style = document.createElement('style');
-                style.textContent = `
-                    @keyframes slideIn {
-                        from { transform: translateX(100%); opacity: 0; }
-                        to { transform: translateX(0); opacity: 1; }
-                    }
-                `;
-                document.head.appendChild(style);
-            }
-
-            removeDeleteSelectedButton() {
-                const btn = document.querySelector('.delete-selected-btn');
-                if (btn) {
-                    btn.remove();
-                }
-            }
-
-            formatFileSize(bytes) {
-                if (bytes === 0) return '0 Bytes';
-                const k = 1024;
-                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-                const i = Math.floor(Math.log(bytes) / Math.log(k));
-                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-            }
-
-            playNote(note, postElement) {
-                const playButton = postElement.querySelector('.play-button');
-                
-                // Si no hay audioUrl, mostrar mensaje
-                if (!note.audioUrl) {
-                    playButton.textContent = '❌';
-                    setTimeout(() => {
-                        playButton.textContent = '▶';
-                    }, 1000);
-                    alert('Esta grabación ya no está disponible. Solo las grabaciones de la sesión actual pueden reproducirse.');
-                    return;
-                }
-
-                // Stop any currently playing audio
-                document.querySelectorAll('.voice-post.playing').forEach(el => {
-                    el.classList.remove('playing');
-                    el.querySelector('.play-button').textContent = '▶';
-                    el.querySelector('.play-button').classList.remove('playing');
-                });
-
-                const audio = new Audio(note.audioUrl);
-
-                postElement.classList.add('playing');
-                playButton.classList.add('playing');
-                playButton.textContent = '⏸️';
-                
-                audio.play();
-                
-                audio.onended = () => {
-                    postElement.classList.remove('playing');
-                    playButton.classList.remove('playing');
-                    playButton.textContent = '▶';
-                };
-
-                // Handle pause functionality
-                playButton.onclick = (e) => {
-                    e.stopPropagation();
-                    if (audio.paused) {
-                        audio.play();
-                        playButton.textContent = '⏸️';
-                        postElement.classList.add('playing');
-                        playButton.classList.add('playing');
-                    } else {
-                        audio.pause();
-                        playButton.textContent = '▶';
-                        postElement.classList.remove('playing');
-                        playButton.classList.remove('playing');
-                    }
-                };
-            }
-
-            updateUI() {
-                if (this.notes.length === 0) {
-                    this.emptyState.style.display = 'block';
                 } else {
-                    this.emptyState.style.display = 'none';
+                    this.speedDisplay.textContent = parseInt(speed);
                 }
             }
 
-            saveNotes() {
-                // Guardar metadatos de las notas (sin el audioUrl que es temporal)
-                const noteMetadata = this.notes.map(note => ({
-                    id: note.id,
-                    timestamp: note.timestamp,
-                    language: note.language
-                }));
-                localStorage.setItem('voiceNotes', JSON.stringify(noteMetadata));
-                console.log('Notas guardadas:', noteMetadata.length);
+            switchBgMode(mode) {
+                this.bgMode = mode;
+                this.bgTabs.forEach(t => t.classList.toggle('active', t.dataset.bgMode === mode));
+                this.bgPanels.forEach(p => p.classList.remove('active'));
+                document.getElementById(`bg-panel-${mode}`).classList.add('active');
+                this.applyBackground();
             }
 
-            loadNotes() {
-                try {
-                    const savedNotes = localStorage.getItem('voiceNotes');
-                    if (savedNotes) {
-                        const noteMetadata = JSON.parse(savedNotes);
-                        // Las notas guardadas no tendrán audioUrl, pero podemos mostrar la estructura
-                        this.notes = noteMetadata.map(meta => ({
-                            ...meta,
-                            timestamp: new Date(meta.timestamp),
-                            audioUrl: null // No podemos recuperar el audio
-                        }));
-                        console.log('Notas cargadas:', this.notes.length);
-                    } else {
-                        this.notes = [];
-                        // Crear algunas notas de demo si no hay notas guardadas
-                        this.createDemoNotes();
+            applyBackground() {
+                if (this.bgMode === 'image') {
+                    // When image is active, teleprompter background is black.
+                    this.display.style.backgroundImage = 'none';
+                    this.display.style.backgroundColor = '#000';
+                    this.applyImageBackground();
+                } else {
+                    // For color or gradient, apply to the display and hide the image wrapper.
+                    this.imageWrapperForScroll.style.display = 'none';
+                    if (this.bgMode === 'color') {
+                        this.display.style.backgroundImage = 'none';
+                        this.display.style.backgroundColor = this.bgColorPicker.value;
+                    } else if (this.bgMode === 'gradient') {
+                        if (!this.display.style.backgroundImage || this.display.style.backgroundImage === 'none') {
+                            this.applyCustomGradient();
+                        }
                     }
-                } catch (error) {
-                    console.error('Error cargando notas:', error);
-                    this.notes = [];
-                    this.createDemoNotes();
                 }
-                this.renderNotes();
-                this.updateUI();
             }
 
-            createDemoNotes() {
-                const demoNotes = [
-                    {
-                        id: Date.now() - 3000,
-                        timestamp: new Date(Date.now() - 3600000), // 1 hora atrás
-                        language: 'es',
-                        audioUrl: null
-                    },
-                    {
-                        id: Date.now() - 2000,
-                        timestamp: new Date(Date.now() - 7200000), // 2 horas atrás
-                        language: 'us',
-                        audioUrl: null
-                    },
-                    {
-                        id: Date.now() - 1000,
-                        timestamp: new Date(Date.now() - 10800000), // 3 horas atrás
-                        language: 'it',
-                        audioUrl: null
-                    }
-                ];
-                this.notes = demoNotes;
-                this.saveNotes();
+            applyCustomGradient() {
+                this.gradientPresets.forEach(p => p.classList.remove('selected'));
+                const angle = this.gradientAngle.value;
+                const c1 = this.gradientColor1.value;
+                const c2 = this.gradientColor2.value;
+                this.display.style.backgroundImage = `linear-gradient(${angle}deg, ${c1}, ${c2})`;
+                this.display.style.backgroundColor = 'transparent';
             }
-        }
 
-        // Global functions for modal management
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('show');
-        }
+            handleImageUpload(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    this.bgImageData = ev.target.result;
+                    this.bgImagePreview.src = this.bgImageData;
+                    this.bgImagePreview.style.display = 'block';
+                    this.bgImagePlaceholder.style.display = 'none';
+                    this.applyBackground();
+                };
+                reader.readAsDataURL(file);
+            }
 
-        // Global function for creating quick content
-        function createQuickContent(type) {
-            const app = window.voiceBoxApp; // We'll store the app instance globally
-            
-            const contentTemplates = {
-                motivation: {
-                    titles: [
-                        "💪 Frase del Día",
-                        "🌟 Motivación Diaria", 
-                        "🚀 Impulso Positivo",
-                        "⚡ Energía Motivacional"
-                    ],
-                    contents: [
-                        "El éxito no es final, el fracaso no es fatal: lo que cuenta es el coraje de continuar.",
-                        "No esperes a que llegue la oportunidad perfecta. Toma la oportunidad y hazla perfecta.",
-                        "Los sueños no tienen fecha de expiración. Nunca es demasiado tarde para perseguir lo que amas.",
-                        "Cada día es una nueva oportunidad para ser mejor que ayer.",
-                        "El único límite para nuestros logros de mañana son nuestras dudas de hoy."
-                    ]
-                },
-                tip: {
-                    titles: [
-                        "💡 Consejo Útil",
-                        "🔧 Tip Práctico",
-                        "📚 Sabiduría del Día",
-                        "🎯 Consejo Efectivo"
-                    ],
-                    contents: [
-                        "Organiza tu día la noche anterior. Te ayudará a empezar cada mañana con claridad y propósito.",
-                        "Toma descansos de 5 minutos cada hora. Tu productividad y bienestar te lo agradecerán.",
-                        "Lee al menos 10 páginas de un libro cada día. En un año habrás leído más de 12 libros.",
-                        "Practica la regla de los 2 minutos: si algo toma menos de 2 minutos, hazlo inmediatamente.",
-                        "Dedica 10 minutos al día a meditar o practicar mindfulness. Tu mente estará más tranquila."
-                    ]
-                },
-                question: {
-                    titles: [
-                        "❓ Pregunta Reflexiva",
-                        "🤔 Para Reflexionar",
-                        "💭 Pensamiento del Día",
-                        "🔍 Autoreflexión"
-                    ],
-                    contents: [
-                        "¿Qué es lo más importante que puedes hacer hoy para acercarte a tus metas?",
-                        "¿Qué aprenderías si supieras que no puedes fallar?",
-                        "¿Cómo puedes agregar más valor a la vida de las personas que te rodean?",
-                        "¿Qué harías si tuvieras que empezar de nuevo desde cero?",
-                        "¿Qué es lo que más te emociona de tu futuro?"
-                    ]
-                },
-                gratitude: {
-                    titles: [
-                        "🙏 Momento de Gratitud",
-                        "💝 Agradecimiento",
-                        "🌸 Nota de Aprecio",
-                        "✨ Bendiciones del Día"
-                    ],
-                    contents: [
-                        "Hoy agradezco por todas las oportunidades de crecimiento que la vida me presenta.",
-                        "Estoy agradecido por las personas que han creído en mí, incluso cuando yo no lo hacía.",
-                        "Doy gracias por mi salud, mi familia y la capacidad de enfrentar nuevos desafíos.",
-                        "Agradezco por los errores del pasado que me han enseñado lecciones valiosas.",
-                        "Hoy celebro las pequeñas victorias que a menudo paso por alto."
-                    ]
-                },
-                reminder: {
-                    titles: [
-                        "⏰ Recordatorio Importante",
-                        "📝 No Olvides",
-                        "🎯 Recuerda Esto",
-                        "💡 Nota Mental"
-                    ],
-                    contents: [
-                        "Recuerda tomar agua regularmente durante el día. Tu cuerpo y mente funcionan mejor hidratados.",
-                        "No olvides celebrar tus pequeños logros. Cada paso cuenta en el camino hacia tus metas.",
-                        "Recuerda que está bien decir 'no' cuando algo no se alinea con tus prioridades.",
-                        "No olvides contactar a esa persona importante para ti. Las relaciones requieren atención.",
-                        "Recuerda que el progreso es más importante que la perfección."
-                    ]
-                },
-                goal: {
-                    titles: [
-                        "🎯 Meta Personal",
-                        "🚀 Objetivo Definido",
-                        "📈 Propósito Claro",
-                        "⭐ Aspiración"
-                    ],
-                    contents: [
-                        "Esta semana me comprometo a aprender algo nuevo que me acerque a mis objetivos profesionales.",
-                        "Mi meta es dedicar 30 minutos diarios a una actividad que realmente disfrute y me relaje.",
-                        "Me propongo mejorar mis habilidades de comunicación escuchando más y hablando con intención.",
-                        "Esta semana trabajaré en construir un hábito saludable que beneficie mi bienestar físico.",
-                        "Mi objetivo es ser más consciente de mis pensamientos y emociones para tomar mejores decisiones."
-                    ]
+            applyImageBackground() {
+                if (!this.bgImageData) {
+                    this.imageWrapperForScroll.style.display = 'none';
+                    return;
                 }
-            };
+                this.imageWrapperForScroll.style.display = 'block';
+                this.bgImageLayer.src = this.bgImageData;
 
-            const template = contentTemplates[type];
-            if (!template) return;
+                const fit = this.bgImageFit.value;
+                if (fit === 'stretch') {
+                    this.bgImageLayer.style.objectFit = 'fill';
+                } else {
+                    this.bgImageLayer.style.objectFit = fit;
+                }
+            }
 
-            const randomTitle = template.titles[Math.floor(Math.random() * template.titles.length)];
-            const randomContent = template.contents[Math.floor(Math.random() * template.contents.length)];
-
-            // Create the note
-            app.addNote({
-                type: 'text',
-                title: randomTitle,
-                content: randomContent
-            });
-
-            // Close modal
-            closeModal('create-modal');
         }
 
+        // Since we removed the main app, we instantiate Teleprompter directly.
         document.addEventListener('DOMContentLoaded', () => {
-            window.voiceBoxApp = new VoiceWallApp();
+            new Teleprompter(null);
         });
     </script>
+
 </body>
 </html>

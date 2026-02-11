@@ -4,213 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tu espacio de voces</title>
+    <link rel="stylesheet" href="assets/css/common.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0a0a0f;
-            color: #ffffff;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
-        /* Nebula background */
-        .nebula-background {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.2) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 70%, rgba(255, 165, 0, 0.15) 0%, transparent 50%),
-                        radial-gradient(circle at 50% 50%, rgba(255, 255, 0, 0.1) 0%, transparent 50%);
-            animation: nebula-drift 20s ease-in-out infinite;
-        }
-
-        @keyframes nebula-drift {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            50% { transform: scale(1.1) rotate(180deg); }
-        }
-
-        /* Animated glow overlays */
-        .glow-overlay {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-        }
-
-        .glow-sphere {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(60px);
-            animation: pulse-glow 4s ease-in-out infinite;
-        }
-
-        .glow-sphere:nth-child(1) {
-            top: 25%;
-            left: 25%;
-            width: 400px;
-            height: 400px;
-            background: rgba(255, 165, 0, 0.2);
-        }
-
-        .glow-sphere:nth-child(2) {
-            bottom: 25%;
-            right: 25%;
-            width: 400px;
-            height: 400px;
-            background: rgba(255, 215, 0, 0.2);
-            animation-delay: 1s;
-        }
-
-        .glow-sphere:nth-child(3) {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 600px;
-            height: 600px;
-            background: rgba(255, 255, 0, 0.1);
-            animation-delay: 2s;
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% { opacity: 0.5; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.1); }
-        }
-
-        /* Header */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            padding: 1rem 2rem;
-            background: rgba(10, 10, 15, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 900;
-            font-family: 'Courier New', monospace;
-            background: linear-gradient(to right, #FFA500, #FFD700, #FFFF00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
-            letter-spacing: 3px;
-            transform: skew(-5deg);
-            text-transform: uppercase;
-        }
-
-        .header-buttons {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .header-button {
-            padding: 0.5rem 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 0.5rem;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .header-button:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.9);
-            transform: translateY(-1px);
-        }
-
-        .header-button.active {
-            background: linear-gradient(135deg, #FFA500, #FFD700);
-            color: white;
-            border-color: transparent;
-        }
-
-        /* Language selector */
-        .language-selector {
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .language-flag {
-            padding: 0.5rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 48px;
-            height: 40px;
-            position: relative;
-        }
-
-        .language-flag:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-1px) scale(1.1);
-        }
-
+        /* Estilos unicos de index.html */
         .language-flag.active {
             background: linear-gradient(135deg, #FFA500, #FFD700);
             border-color: transparent;
             box-shadow: 0 0 20px rgba(255, 165, 0, 0.3);
-        }
-
-        .language-flag.recording {
-            animation: pulse 1s ease-in-out infinite;
-            background: linear-gradient(135deg, #ff4444, #cc0000);
-            box-shadow: 0 0 30px rgba(255, 68, 68, 0.5);
-        }
-
-        .language-flag .mic-icon {
-            position: absolute;
-            bottom: -2px;
-            right: -2px;
-            font-size: 0.7rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .language-more {
-            padding: 0.5rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-        }
-
-        .language-more:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.9);
-            transform: translateY(-1px) rotate(90deg);
         }
 
         .language-dropdown {
@@ -252,7 +52,6 @@
             color: white;
         }
 
-        /* Main content */
         .main-content {
             position: relative;
             z-index: 10;
@@ -294,7 +93,6 @@
             line-height: 1.6;
         }
 
-        /* Voice wall */
         .voice-wall {
             position: relative;
             width: 100%;
@@ -328,61 +126,6 @@
             animation: pulse 1s ease-in-out infinite;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        @keyframes fade-in {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Voice recorder */
-        .voice-recorder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .record-button {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ff1493, #8a2be2);
-            border: none;
-            color: white;
-            font-size: 2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .record-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 30px rgba(255, 255, 0, 0.5);
-        }
-
-        .record-button.recording {
-            animation: pulse 1s ease-in-out infinite;
-            background: linear-gradient(135deg, #ff4444, #cc0000);
-        }
-
-        .status-text {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.875rem;
-        }
-
-        /* Instructions */
         .instructions {
             position: fixed;
             bottom: 8rem;
@@ -405,7 +148,6 @@
             font-size: 0.75rem;
         }
 
-        /* Loading */
         .loading {
             display: flex;
             align-items: center;
@@ -426,7 +168,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .main-content {
                 padding: 1rem;
@@ -442,8 +183,6 @@
             }
         }
 
-
-        /* Register Form Section - Sidebar Style */
         .register-form-section {
             position: fixed;
             left: 0;
@@ -679,6 +418,7 @@
         </div>
     </main>
 
+    <script src="assets/js/auth.js"></script>
     <script>
         class VoiceWallApp {
             constructor() {
@@ -709,7 +449,7 @@
                 // Language selector events
                 this.languageMore.addEventListener('click', () => this.toggleLanguageDropdown());
                 this.languageOptions.forEach(option => {
-                    option.addEventListener('click', (e) => this.selectLanguage(e.target));
+                    option.addEventListener('click', (e) => this.selectLanguage(e.currentTarget));
                 });
                 
                 // Close dropdown when clicking outside
@@ -777,10 +517,10 @@
                     
                     this.recordButton.classList.add('recording');
                     this.recordButton.textContent = '⏹️';
-                    this.statusText.textContent = 'Grabando...';
+                    if(this.statusText) this.statusText.textContent = 'Grabando...';
                 } catch (error) {
                     console.error('Error accessing microphone:', error);
-                    this.statusText.textContent = 'Error: No se pudo acceder al micrófono';
+                    if(this.statusText) this.statusText.textContent = 'Error: No se pudo acceder al micrófono';
                 }
             }
 
@@ -791,7 +531,7 @@
                     
                     this.recordButton.classList.remove('recording');
                     this.recordButton.textContent = '🎤';
-                    this.statusText.textContent = '';
+                    if(this.statusText) this.statusText.textContent = '';
                 }
             }
 
@@ -865,190 +605,7 @@
             }
         }
 
-        // Registration Form functionality
-        class RegistrationForm {
-            constructor() {
-                this.formSection = document.getElementById('register-form-section');
-                this.grafiterBtn = document.getElementById('grafiter-btn');
-                this.sidebarRegisterBtn = document.getElementById('sidebar-register-btn');
-                this.sidebarLoginBtn = document.getElementById('sidebar-login-btn');
-                this.cancelBtns = document.querySelectorAll('.cancel-btn');
-                this.registerForm = document.getElementById('register-form');
-                this.loginForm = document.getElementById('login-form');
-                this.isFormVisible = false;
-                this.isRegisterExpanded = false;
-                this.isLoginExpanded = false;
-                
-                this.init();
-            }
-
-            init() {
-                // Toggle form when clicking GRAFITER
-                this.grafiterBtn.addEventListener('click', () => this.toggleForm());
-                
-                // Toggle register form when clicking REGISTER in sidebar
-                this.sidebarRegisterBtn.addEventListener('click', () => this.toggleRegisterForm());
-                
-                // Toggle login form when clicking LOG IN button
-                if (this.sidebarLoginBtn) {
-                    this.sidebarLoginBtn.addEventListener('click', () => this.toggleLoginForm());
-                }
-                
-                // Close form events
-                this.cancelBtns.forEach(btn => {
-                    btn.addEventListener('click', () => this.hideForm());
-                });
-                
-                // Handle form submissions
-                this.registerForm.addEventListener('submit', (e) => this.handleRegisterSubmit(e));
-                this.loginForm.addEventListener('submit', (e) => this.handleLoginSubmit(e));
-                
-                // Close form with Escape key
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape' && this.isFormVisible) {
-                        this.hideForm();
-                    }
-                });
-            }
-
-            toggleForm() {
-                if (this.isFormVisible) {
-                    this.hideForm();
-                } else {
-                    this.showForm();
-                }
-            }
-
-            showForm() {
-                this.formSection.style.display = 'block';
-                document.querySelector('.main-content').classList.add('with-sidebar');
-                this.isFormVisible = true;
-            }
-
-            toggleRegisterForm() {
-                // Si el registro ya está abierto, cerrarlo
-                if (this.isRegisterExpanded) {
-                    this.isRegisterExpanded = false;
-                    this.registerForm.style.display = 'none';
-                    this.sidebarRegisterBtn.style.background = 'none';
-                } else {
-                    // Cerrar login si está abierto
-                    if (this.isLoginExpanded) {
-                        this.isLoginExpanded = false;
-                        this.loginForm.style.display = 'none';
-                        this.sidebarLoginBtn.style.background = 'none';
-                    }
-                    
-                    // Abrir registro
-                    this.isRegisterExpanded = true;
-                    this.registerForm.style.display = 'flex';
-                    this.sidebarRegisterBtn.style.background = 'linear-gradient(135deg, #00bfff, #8a2be2)';
-                }
-            }
-
-            toggleLoginForm() {
-                // Si el login ya está abierto, cerrarlo
-                if (this.isLoginExpanded) {
-                    this.isLoginExpanded = false;
-                    this.loginForm.style.display = 'none';
-                    this.sidebarLoginBtn.style.background = 'none';
-                } else {
-                    // Cerrar registro si está abierto
-                    if (this.isRegisterExpanded) {
-                        this.isRegisterExpanded = false;
-                        this.registerForm.style.display = 'none';
-                        this.sidebarRegisterBtn.style.background = 'none';
-                    }
-                    
-                    // Abrir login
-                    this.isLoginExpanded = true;
-                    this.loginForm.style.display = 'flex';
-                    this.sidebarLoginBtn.style.background = 'linear-gradient(135deg, #00bfff, #8a2be2)';
-                }
-            }
-
-            hideForm() {
-                this.formSection.style.display = 'none';
-                document.querySelector('.main-content').classList.remove('with-sidebar');
-                this.isFormVisible = false;
-                
-                // Clear and hide both forms
-                this.registerForm.reset();
-                this.loginForm.reset();
-                this.registerForm.style.display = 'none';
-                this.loginForm.style.display = 'none';
-                
-                // Reset form states, button texts and styles
-                this.isRegisterExpanded = false;
-                this.isLoginExpanded = false;
-                this.sidebarRegisterBtn.textContent = 'REGISTER';
-                this.sidebarLoginBtn.textContent = 'LOG IN';
-                this.sidebarRegisterBtn.style.background = 'none';
-                this.sidebarLoginBtn.style.background = 'none';
-            }
-
-            handleRegisterSubmit(e) {
-                e.preventDefault();
-                
-                const formData = new FormData(this.registerForm);
-                const username = formData.get('username');
-                const email = formData.get('email');
-                const password = formData.get('password');
-                const confirmPassword = formData.get('confirm-password');
-
-                // Basic validation
-                if (password !== confirmPassword) {
-                    alert('Passwords do not match');
-                    return;
-                }
-
-                if (password.length < 6) {
-                    alert('Password must be at least 6 characters');
-                    return;
-                }
-
-                alert(`User ${username} registered successfully!`);
-                
-                this.hideForm();
-            }
-
-            handleLoginSubmit(e) {
-                e.preventDefault();
-                
-                const formData = new FormData(this.loginForm);
-                const email = formData.get('login-email');
-                const password = formData.get('login-password');
-
-                // Basic validation
-                if (!email || !password) {
-                    alert('Por favor, completa todos los campos');
-                    return;
-                }
-
-                // Credenciales válidas
-                const validEmail = 'mi@gmail.com';
-                const validPassword = '123456';
-
-                if (email !== validEmail || password !== validPassword) {
-                    alert('Credenciales incorrectas');
-                    return;
-                }
-                
-                // Show loading message
-                const submitBtn = this.loginForm.querySelector('.submit-btn');
-                const originalText = submitBtn.textContent;
-                submitBtn.textContent = 'Iniciando sesión...';
-                submitBtn.disabled = true;
-                
-                // Simulate authentication delay and redirect
-                setTimeout(() => {
-                    // Redirect to voicebox.html
-                    window.location.href = 'USUARIOS/voicebox.html';
-                }, 1000);
-            }
-        }
-
-        // Initialize the app when the page loads
+        // Initialize both apps when the page loads
         document.addEventListener('DOMContentLoaded', () => {
             new VoiceWallApp();
             new RegistrationForm();

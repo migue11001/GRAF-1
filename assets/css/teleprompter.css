@@ -1,0 +1,516 @@
+/* Teleprompter Styles */
+#teleprompter-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+#teleprompter-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
+.teleprompter-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--background-base);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    color: var(--text-base);
+}
+
+.teleprompter-panel.show {
+    transform: translateX(0);
+}
+
+.teleprompter-panel .close-btn {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 10;
+}
+.teleprompter-panel .close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+#teleprompter-display {
+    flex-grow: 1;
+    overflow-y: hidden;
+    background-color: #000;
+    position: relative;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#teleprompter-text-content {
+    position: relative;
+    z-index: 2;
+    margin: 0 auto;
+    padding: 1rem 5%;
+    width: 90%;
+    font-size: 58px;
+    color: #fff;
+    line-height: 1.5;
+    text-align: center;
+    white-space: pre-wrap;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-weight: bold;
+}
+
+/* Reading indicator */
+.laser-cursor {
+    position: absolute;
+    left: 8px;
+    top: 40%;
+    z-index: 10;
+    display: none;
+    pointer-events: none;
+    font-size: 2rem;
+    line-height: 1;
+    color: rgba(255, 215, 0, 0.9);
+    text-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
+    transform: translateY(-50%);
+}
+
+#teleprompter-display .bg-image-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    object-fit: cover;
+    object-position: center;
+    display: none;
+}
+
+#teleprompter-script-editor {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: #1a1a1a;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+}
+
+#teleprompter-script-editor textarea {
+    flex-grow: 1;
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #fff;
+    padding: 1rem;
+    font-size: 1rem;
+    resize: none;
+}
+#teleprompter-script-editor textarea:focus {
+    outline: none;
+}
+
+#teleprompter-controls {
+    position: absolute;
+    bottom: 200px;
+    left: 0;
+    right: 0;
+    z-index: 6;
+    background: rgba(18, 18, 18, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+#teleprompter-controls nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+    position: relative;
+}
+
+#teleprompter-controls nav button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+#teleprompter-controls nav svg {
+    fill: #fff;
+    width: 32px;
+    height: 32px;
+}
+
+#teleprompter-controls .drawer {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    padding: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    display: none;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+#teleprompter-controls .drawer.expanded {
+    display: grid;
+}
+
+#teleprompter-controls .drawer > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+    background: #2a2a2a;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+#teleprompter-controls .drawer .disable-select {
+    font-size: 0.8rem;
+    color: var(--text-subdued);
+}
+
+#teleprompter-controls .drawer input[type="range"] {
+    width: 100%;
+}
+
+/* Audio Nav Button (red) */
+.audio-nav-btn {
+    background: rgba(204, 0, 0, 0.7) !important;
+}
+.audio-nav-btn:hover {
+    background: rgba(204, 0, 0, 0.9) !important;
+}
+
+/* Audio Panel */
+.audio-panel {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.audio-options {
+    display: flex;
+    gap: 6px;
+}
+
+.audio-opt-btn {
+    flex: 1;
+    padding: 6px 12px;
+    background: rgba(255, 215, 0, 0.5);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s ease;
+}
+
+.audio-opt-btn:hover {
+    background: rgba(255, 215, 0, 0.7);
+}
+
+.audio-stop-btn {
+    width: 100%;
+    padding: 6px 12px;
+    background: #cc0000;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.audio-remove-btn {
+    width: 100%;
+    margin-top: 0.4rem;
+    padding: 4px 8px;
+    background: #444;
+    color: #ccc;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+
+.audio-remove-btn:hover {
+    background: #555;
+}
+
+/* Mic status indicator */
+#audio-mic-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+}
+
+.mic-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #666;
+}
+
+.mic-indicator.recording {
+    background: #cc0000;
+    animation: mic-pulse 1s ease-in-out infinite;
+}
+
+@keyframes mic-pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(204, 0, 0, 0.6); }
+    50% { opacity: 0.7; box-shadow: 0 0 8px 4px rgba(204, 0, 0, 0.3); }
+}
+
+.mic-status-text {
+    font-size: 0.8rem;
+    color: #ccc;
+}
+
+/* Background Selector */
+.bg-selector-wrapper {
+    grid-column: 1 / -1;
+    background: #2a2a2a;
+    border-radius: 8px;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.bg-mode-tabs {
+    display: flex;
+    gap: 4px;
+    background: #1a1a1a;
+    border-radius: 6px;
+    padding: 3px;
+}
+
+.bg-tab {
+    flex: 1;
+    padding: 6px 8px !important;
+    border: none !important;
+    border-radius: 4px;
+    background: transparent !important;
+    color: #999 !important;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.bg-tab:hover {
+    color: #ccc !important;
+}
+
+.bg-tab.active {
+    background: #444 !important;
+    color: #fff !important;
+}
+
+.bg-panel {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.bg-panel.active {
+    display: flex;
+}
+
+/* Gradient Presets Grid */
+.gradient-presets-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 40px);
+    gap: 6px;
+    justify-content: center;
+}
+
+.gradient-preset {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 6px !important;
+    border: 2px solid transparent !important;
+    cursor: pointer;
+    padding: 0 !important;
+    transition: border-color 0.2s ease, transform 0.15s ease;
+}
+
+.gradient-preset:hover {
+    transform: scale(1.1);
+    border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.gradient-preset.selected {
+    border-color: #fff !important;
+}
+
+/* Gradient Custom Editor */
+.gradient-custom {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.gradient-custom-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.gradient-custom-row label {
+    font-size: 0.75rem;
+    color: #999;
+    white-space: nowrap;
+}
+
+.gradient-custom-row input[type="color"] {
+    width: 36px;
+    height: 28px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background: none;
+}
+
+.gradient-custom-row input[type="range"] {
+    flex: 1;
+    min-width: 0;
+}
+
+.gradient-apply-btn {
+    width: 100%;
+    padding: 6px 12px !important;
+    background: #444 !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.gradient-apply-btn:hover {
+    background: #555 !important;
+}
+
+/* Image Panel */
+.image-upload-btn {
+    display: inline-block;
+    padding: 6px 16px;
+    background: #444;
+    color: #fff;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    text-align: center;
+}
+
+.image-upload-btn:hover {
+    background: #555;
+}
+
+.image-preview-container {
+    width: 80px;
+    height: 80px;
+    border-radius: 6px;
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #1a1a1a;
+}
+
+.image-preview-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-preview-container #bg-image-placeholder {
+    font-size: 0.7rem;
+    color: #666;
+}
+
+.image-fit-options {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.image-fit-options label {
+    font-size: 0.75rem;
+    color: #999;
+}
+
+.image-fit-options select {
+    flex: 1;
+    background: #333;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+}
+
+.image-opacity-row {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.image-opacity-row label {
+    font-size: 0.75rem;
+    color: #999;
+}
+
+.image-opacity-row input[type="range"] {
+    width: 100%;
+}
+
+/* Image overlay on teleprompter display */
+#teleprompter-display {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
