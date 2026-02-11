@@ -163,7 +163,7 @@ class RegistrationForm {
         localStorage.setItem('grafiter_session', JSON.stringify(session));
 
         setTimeout(() => {
-            window.location.href = 'USUARIOS/voicebox.html';
+            window.location.href = '/USUARIOS/voicebox.html';
         }, 1000);
     }
 }
