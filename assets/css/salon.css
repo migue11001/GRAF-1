@@ -96,105 +96,166 @@
 .voice-post {
     width: 200px;
     height: 200px;
-    background: rgba(24, 24, 24, 0.8);
-    backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    padding: 1rem;
     transition: all 0.3s ease;
     animation: fade-in 0.5s ease-out;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgba(24, 24, 24, 0.8);
 }
 
 .voice-post:hover {
-    background: rgba(36, 36, 36, 0.8);
     transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(255, 165, 0, 0.2);
-}
-
-.post-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.user-avatar {
-    width: 30px;
-    height: 30px;
-    background: rgba(42, 42, 42, 0.8);
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-    box-shadow: 0 2px 8px rgba(255, 165, 0, 0.3);
-}
-
-.post-user-info {
-    flex: 1;
-}
-
-.post-username {
-    font-size: 0.7rem;
-    font-weight: bold;
-    color: white;
-    margin-bottom: 0.1rem;
-}
-
-.post-timestamp {
-    font-size: 0.6rem;
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.language-button {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 0.3rem;
-    padding: 0.2rem 0.4rem;
-    font-size: 0.6rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    backdrop-filter: blur(10px);
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 0.2rem;
-}
-
-.language-button:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-1px) scale(1.05);
-    box-shadow: 0 2px 8px rgba(255, 165, 0, 0.4);
-}
-
-.post-content {
-    margin-bottom: 0.5rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    box-shadow: 0 8px 32px rgba(255, 165, 0, 0.3);
+    border-color: rgba(255, 215, 0, 0.4);
 }
 
 .post-title {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: bold;
     color: white;
-    margin-bottom: 0.25rem;
     text-align: center;
+    padding: 0.5rem;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+    border-radius: 12px 12px 0 0;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 
-.post-description {
-    color: rgba(255, 255, 255, 0.6);
+.post-date {
     font-size: 0.6rem;
-    line-height: 1.2;
+    color: rgba(255, 255, 255, 0.8);
     text-align: center;
-    display: none; /* Ocultar para ahorrar espacio */
+    padding: 0.4rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+    border-radius: 0 0 12px 12px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
+
+/* Teleprompter Viewer Overlay */
+.tp-viewer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3000;
+    display: none;
+    flex-direction: column;
+    background: #000;
+}
+
+.tp-viewer-overlay.active {
+    display: flex;
+}
+
+.tp-viewer-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tp-viewer-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.tp-viewer-title {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 10;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+}
+
+.tp-viewer-display {
+    flex: 1;
+    overflow-y: hidden;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.tp-viewer-text {
+    width: 100%;
+    text-align: center;
+    white-space: pre-wrap;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-weight: bold;
+    line-height: 1.5;
+    word-wrap: break-word;
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: none;
+}
+
+.tp-viewer-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+}
+
+.tp-viewer-btn {
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.tp-viewer-play {
+    background: rgba(255, 215, 0, 0.6);
+    color: white;
+}
+
+.tp-viewer-play:hover {
+    background: rgba(255, 215, 0, 0.8);
+}
+
+.tp-viewer-play.playing {
+    background: rgba(255, 71, 87, 0.7);
+}
+
+.tp-viewer-play.playing:hover {
+    background: rgba(255, 71, 87, 0.9);
+}
+
 
 .post-actions {
     display: flex;
@@ -284,12 +345,14 @@
 
 .empty-slot {
     background: transparent !important;
+    background-image: none !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     transition: all 0.3s ease;
     position: relative;
+    cursor: default;
 }
 
 .empty-slot:hover {

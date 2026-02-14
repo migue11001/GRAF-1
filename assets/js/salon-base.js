@@ -42,37 +42,32 @@ class VoiceWallApp {
 
     getFilteredNotesByPeriod(period) {
         const now = new Date();
-        
+        const HOUR_24 = 24 * 60 * 60 * 1000;
+        const DAYS_7 = 7 * 24 * 60 * 60 * 1000;
+        const DAYS_28 = 28 * 24 * 60 * 60 * 1000;
+
         const filtered = this.notes.filter(note => {
-            const noteDate = new Date(note.timestamp);
-            const expirationDate = new Date(note.expirationDate);
-            
-            if (now > expirationDate) {
-                return false;
-            }
-            
-            const timeDiff = now - noteDate;
+            if (note.cancelled) return false;
+            const age = now - new Date(note.timestamp);
+            if (age > DAYS_28) return false;
+
             switch(period) {
-                case 'dia':
-                    return note.publishPeriod === 'day' || timeDiff <= 24 * 60 * 60 * 1000;
-                case 'semana':
-                    return note.publishPeriod === 'week' || timeDiff <= 7 * 24 * 60 * 60 * 1000;
-                case 'mes':
-                    return note.publishPeriod === 'month' || timeDiff <= 30 * 24 * 60 * 60 * 1000;
-                default:
-                    return true;
+                case 'dia':    return age <= HOUR_24;
+                case 'semana': return age > HOUR_24 && age <= DAYS_7;
+                case 'mes':    return age > DAYS_7 && age <= DAYS_28;
+                default:       return false;
             }
         });
-        
+
         filtered.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        
+
         const maxSlots = 20;
         const slots = [];
-        
+
         for (let i = 0; i < maxSlots; i++) {
             const slotNumber = this.generateSlotNumber(period, i + 1);
             const noteForSlot = filtered[i];
-            
+
             if (noteForSlot) {
                 noteForSlot.slotNumber = slotNumber;
                 noteForSlot.vacio = false;
@@ -90,55 +85,37 @@ class VoiceWallApp {
                 });
             }
         }
-        
+
         return slots;
     }
 
     cleanExpiredNotes() {
         const now = new Date();
+        const DAYS_28 = 28 * 24 * 60 * 60 * 1000;
         const originalLength = this.notes.length;
-        const expiredNotes = [];
-        
+
         this.notes = this.notes.filter(note => {
-            const expirationDate = new Date(note.expirationDate);
-            const isExpired = now > expirationDate;
+            const age = now - new Date(note.timestamp);
+            const isExpired = age > DAYS_28;
             const isCancelled = note.cancelled;
-            
+
             if (isExpired || isCancelled) {
-                expiredNotes.push(note);
                 if (note.slotNumber) {
                     this.logSlotLiberation(note.slotNumber, isExpired ? 'expired' : 'cancelled');
                 }
                 return false;
             }
-            
             return true;
         });
-        
+
         if (this.notes.length !== originalLength) {
             this.saveNotes();
-            console.log(`🧹 LIMPIEZA: ${originalLength - this.notes.length} notas eliminadas (${expiredNotes.length} expiradas/canceladas)`);
         }
     }
 
     calculateExpirationDate(publishPeriod, timestamp) {
-        const startDate = new Date(timestamp);
-        const expirationDate = new Date(startDate);
-        
-        switch(publishPeriod) {
-            case 'day':
-                expirationDate.setHours(expirationDate.getHours() + 24);
-                break;
-            case 'week':
-                expirationDate.setDate(expirationDate.getDate() + 7);
-                break;
-            case 'month':
-                expirationDate.setDate(expirationDate.getDate() + 30);
-                break;
-            default:
-                expirationDate.setHours(expirationDate.getHours() + 24);
-        }
-        
+        const expirationDate = new Date(timestamp);
+        expirationDate.setDate(expirationDate.getDate() + 28);
         return expirationDate;
     }
 
@@ -226,53 +203,28 @@ class VoiceWallApp {
                     note.logged = true;
                 }
 
-                const country = note.country || this.config.country;
-                const now = new Date();
-                const expirationDate = new Date(note.expirationDate);
-                const timeLeft = expirationDate - now;
-                
-                const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
-                const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                
-                let timeLeftText = this.config.strings.expired;
-                if (timeLeft > 0) {
-                    if (daysLeft > 0) timeLeftText = `${daysLeft}${this.config.strings.daysRemaining}`;
-                    else if (hoursLeft > 0) timeLeftText = `${hoursLeft}${this.config.strings.hoursRemaining}`;
-                    else timeLeftText = this.config.strings.expiresSoon;
+                // Apply cover image or slide background to card
+                if (note.coverImage) {
+                    postElement.style.backgroundImage = `url(${note.coverImage})`;
+                } else {
+                    const s = note.style || {};
+                    if (s.bgMode === 'image' && s.bgImageData) {
+                        postElement.style.backgroundImage = `url(${s.bgImageData})`;
+                    } else if (s.bgMode === 'gradient' && s.bgGradient) {
+                        postElement.style.backgroundImage = s.bgGradient;
+                    } else if (s.bgColor) {
+                        postElement.style.backgroundColor = s.bgColor;
+                    }
                 }
-                
-                const formattedDate = note.timestamp.toLocaleDateString(this.config.locale, { year: 'numeric', month: 'short', day: 'numeric' });
-                const formattedTime = note.timestamp.toLocaleTimeString(this.config.locale, { hour: '2-digit', minute: '2-digit' });
 
-                const contentTypeIcon = this.getContentTypeIcon(note.type);
-                const contentHtml = this.generateNoteContent(note, index);
+                const formattedDate = note.timestamp.toLocaleDateString(this.config.locale, { year: 'numeric', month: 'short', day: 'numeric' });
 
                 postElement.innerHTML = `
-                    <div class="post-header">
-                        <div class="user-avatar">${contentTypeIcon}</div>
-                        <div class="post-user-info">
-                            <div class="post-username">${this.config.strings.userLabel} ${country}</div>
-                            <div class="post-timestamp">${formattedDate} • ${formattedTime}</div>
-                        </div>
-                        <div class="post-controls">
-                            <div class="time-left">${timeLeftText}</div>
-                            <button class="cancel-button" data-note-id="${note.id}" title="Cancelar publicación">❌</button>
-                        </div>
-                    </div>
-                    ${contentHtml}
-                    <div class="post-actions">
-                        <div class="play-control">
-                            <button class="play-button">${note.audioUrl ? '▶' : '🔒'}</button>
-                            <div class="wave-indicator">
-                                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-                            </div>
-                            ${!note.audioUrl ? `<span class="unavailable-text">${this.config.strings.audioUnavailable}</span>` : ''}
-                        </div>
-                    </div>
+                    <div class="post-title">${note.title || ''}</div>
+                    <div class="post-date">${formattedDate}</div>
                 `;
-                
-                postElement.querySelector('.play-button')?.addEventListener('click', (e) => { e.stopPropagation(); this.playNote(note, postElement); });
-                postElement.querySelector('.cancel-button')?.addEventListener('click', (e) => { e.stopPropagation(); this.cancelPublication(note.id); });
+
+                postElement.addEventListener('click', () => this.openViewer(note));
             }
             container.appendChild(postElement);
         });
@@ -296,6 +248,142 @@ class VoiceWallApp {
                 const formattedTime = note.timestamp.toLocaleTimeString(this.config.locale, { hour: '2-digit', minute: '2-digit' });
                 return `<div class="post-content"><div class="post-title">${s.voiceNote} ${country} #${index + 1}</div><div class="post-description">Grabación desde VoiceBox • ${formattedDate} ${formattedTime}</div></div>`;
         }
+    }
+
+    openViewer(note) {
+        this.viewerPlaying = false;
+        this.viewerAnimFrame = null;
+        this.viewerScrollPos = 0;
+
+        let overlay = document.getElementById('tp-viewer-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'tp-viewer-overlay';
+            overlay.className = 'tp-viewer-overlay';
+            overlay.innerHTML = `
+                <button class="tp-viewer-close">&times;</button>
+                <div class="tp-viewer-title"></div>
+                <div class="tp-viewer-display">
+                    <div class="tp-viewer-text"></div>
+                </div>
+                <div class="tp-viewer-controls">
+                    <button class="tp-viewer-btn tp-viewer-play">&#9654; Play</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            overlay.querySelector('.tp-viewer-close').addEventListener('click', () => this.closeViewer());
+            overlay.querySelector('.tp-viewer-play').addEventListener('click', (e) => { e.stopPropagation(); this.toggleViewerPlay(); });
+        }
+
+        const display = overlay.querySelector('.tp-viewer-display');
+        const text = overlay.querySelector('.tp-viewer-text');
+        const title = overlay.querySelector('.tp-viewer-title');
+        const playBtn = overlay.querySelector('.tp-viewer-play');
+
+        playBtn.innerHTML = '&#9654; Play';
+        playBtn.classList.remove('playing');
+
+        title.textContent = note.title || '';
+
+        const s = note.style || {};
+        display.style.backgroundImage = 'none';
+        display.style.backgroundColor = '#000';
+
+        if (s.bgMode === 'gradient' && s.bgGradient) {
+            display.style.backgroundImage = s.bgGradient;
+            display.style.backgroundColor = 'transparent';
+        } else if (s.bgMode === 'image' && s.bgImageData) {
+            display.style.backgroundImage = `url(${s.bgImageData})`;
+            display.style.backgroundSize = 'cover';
+        } else if (s.bgColor) {
+            display.style.backgroundColor = s.bgColor;
+        }
+
+        text.style.color = s.textColor || '#fff';
+        text.style.fontSize = (s.fontSize || 58) + 'px';
+        text.style.padding = `0 ${s.margin || 5}%`;
+        text.textContent = note.content || '';
+
+        // Reset scroll position for teleprompter mode
+        display.scrollTop = 0;
+
+        this.viewerNote = note;
+        overlay.classList.add('active');
+    }
+
+    toggleViewerPlay() {
+        if (this.viewerPlaying) {
+            this.pauseViewer();
+        } else {
+            this.playViewer();
+        }
+    }
+
+    playViewer() {
+        const overlay = document.getElementById('tp-viewer-overlay');
+        const display = overlay.querySelector('.tp-viewer-display');
+        const text = overlay.querySelector('.tp-viewer-text');
+        const playBtn = overlay.querySelector('.tp-viewer-play');
+
+        this.viewerPlaying = true;
+        playBtn.innerHTML = '&#9646;&#9646; Pausa';
+        playBtn.classList.add('playing');
+
+        const displayH = display.clientHeight;
+        const textH = text.scrollHeight;
+        const totalTravel = displayH + textH;
+
+        this.viewerScrollPos = this.viewerScrollPos || 0;
+        text.style.transform = `translateY(${displayH - this.viewerScrollPos}px)`;
+
+        this.viewerLastFrame = performance.now();
+        const scrollStep = (timestamp) => {
+            if (!this.viewerPlaying) return;
+            const delta = timestamp - this.viewerLastFrame;
+            this.viewerLastFrame = timestamp;
+            const speed = (this.viewerNote && this.viewerNote.style && this.viewerNote.style.speed) || 10;
+            const pxPerSec = parseInt(speed) * 3;
+            this.viewerScrollPos += pxPerSec * (delta / 1000);
+
+            text.style.transform = `translateY(${displayH - this.viewerScrollPos}px)`;
+
+            if (this.viewerScrollPos >= totalTravel) {
+                this.stopViewer();
+                return;
+            }
+            this.viewerAnimFrame = requestAnimationFrame(scrollStep);
+        };
+        this.viewerAnimFrame = requestAnimationFrame(scrollStep);
+    }
+
+    pauseViewer() {
+        const overlay = document.getElementById('tp-viewer-overlay');
+        const playBtn = overlay.querySelector('.tp-viewer-play');
+
+        this.viewerPlaying = false;
+        if (this.viewerAnimFrame) cancelAnimationFrame(this.viewerAnimFrame);
+        playBtn.innerHTML = '&#9654; Play';
+        playBtn.classList.remove('playing');
+    }
+
+    stopViewer() {
+        const overlay = document.getElementById('tp-viewer-overlay');
+        const text = overlay.querySelector('.tp-viewer-text');
+        const playBtn = overlay.querySelector('.tp-viewer-play');
+
+        this.viewerPlaying = false;
+        this.viewerScrollPos = 0;
+        if (this.viewerAnimFrame) cancelAnimationFrame(this.viewerAnimFrame);
+        playBtn.innerHTML = '&#9654; Play';
+        playBtn.classList.remove('playing');
+        text.style.transform = 'translateY(0)';
+    }
+
+
+    closeViewer() {
+        this.stopViewer();
+        const overlay = document.getElementById('tp-viewer-overlay');
+        if (overlay) overlay.classList.remove('active');
     }
 
     cancelPublication(noteId) {
@@ -407,7 +495,10 @@ class VoiceWallApp {
             expirationDate: note.expirationDate,
             slotNumber: note.slotNumber,
             userID: note.userID,
-            cancelled: note.cancelled
+            cancelled: note.cancelled,
+            pubCode: note.pubCode,
+            coverImage: note.coverImage || null,
+            style: note.style || null
         }));
         localStorage.setItem(this.config.storageKey, JSON.stringify(noteMetadata));
         console.log(`Publicaciones de ${this.config.lang} guardadas:`, noteMetadata.length);

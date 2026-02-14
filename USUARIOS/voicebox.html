@@ -54,9 +54,202 @@
             width: 24px;
             height: 24px;
         }
+
+        /* Publish Modal Styles */
+        .publish-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            z-index: 2500;
+            backdrop-filter: blur(5px);
+        }
+        .publish-modal-content {
+            background: #1a1a1a;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: left;
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            width: 90%;
+            max-width: 500px;
+        }
+        .publish-modal-content h3 {
+            margin-top: 0;
+            color: #fff;
+            text-align: center;
+        }
+        .publish-form-group {
+            margin-bottom: 1.5rem;
+        }
+        .publish-form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .publish-form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 1rem;
+        }
+        .period-options, .lang-options {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .period-options button, .lang-options button {
+            flex-grow: 1;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: transparent;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .period-options button.active, .lang-options button.active {
+            background-color: rgba(255, 215, 0, 0.5);
+            border-color: rgba(255, 215, 0, 0.7);
+        }
+        .publish-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .publish-action-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        #publish-confirm-btn {
+            background-color: rgba(255, 215, 0, 0.6);
+            color: white;
+        }
+        #publish-confirm-btn:hover {
+            background-color: rgba(255, 215, 0, 0.8);
+        }
+        #publish-cancel-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ccc;
+        }
+        #publish-cancel-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .pub-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        .pub-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .pub-item-title {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .pub-item-code {
+            font-size: 0.7rem;
+            color: rgba(255, 215, 0, 0.8);
+            font-family: monospace;
+            margin-top: 0.15rem;
+        }
+        .pub-item-salon {
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 0.1rem;
+        }
+        .pub-item-delete {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.3rem;
+            margin-left: 0.5rem;
+            transition: transform 0.2s;
+        }
+        .pub-item-delete:hover {
+            transform: scale(1.2);
+        }
     </style>
 </head>
 <body>
+
+    <!-- Publish Modal -->
+    <div id="publish-modal" class="publish-modal">
+        <div class="publish-modal-content">
+            <h3>Crear Publicación</h3>
+            
+            <div class="publish-form-group">
+                <label for="publish-title">Título de la Tarjeta</label>
+                <input type="text" id="publish-title" placeholder="Ej: Reflexiones sobre IA">
+            </div>
+
+            <div class="publish-form-group">
+                <label>Duración Total</label>
+                <div class="period-options">
+                    <button data-period="day" class="active">1 Día</button>
+                    <button data-period="week">7 Días</button>
+                    <button data-period="month">30 Días</button>
+                </div>
+            </div>
+
+            <div class="publish-form-group">
+                <label>Imagen de Portada (opcional)</label>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <label for="publish-cover-image" style="padding: 0.5rem 1rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 0.5rem; color: white; font-size: 0.85rem; cursor: pointer;">Subir imagen</label>
+                    <input type="file" id="publish-cover-image" accept="image/*" style="display: none;">
+                    <span id="publish-cover-name" style="font-size: 0.75rem; color: rgba(255,255,255,0.5);">Sin imagen - se usará el fondo actual</span>
+                </div>
+            </div>
+
+            <div class="publish-form-group">
+                <label>Salón de Destino</label>
+                <div class="lang-options">
+                    <button data-lang="es" class="active">🇪🇸 Español</button>
+                    <button data-lang="it">🇮🇹 Italiano</button>
+                    <button data-lang="us">🇺🇸 Inglés</button>
+                </div>
+            </div>
+
+            <div class="publish-modal-actions">
+                <button id="publish-cancel-btn" class="publish-action-btn">Cancelar</button>
+                <button id="publish-confirm-btn" class="publish-action-btn">Confirmar y Publicar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Publications Modal -->
+    <div id="pubs-modal" class="publish-modal">
+        <div class="publish-modal-content">
+            <h3>Mis Publicaciones</h3>
+            <div id="pubs-list" style="max-height: 50vh; overflow-y: auto;"></div>
+            <div id="pubs-empty" style="text-align: center; color: rgba(255,255,255,0.4); padding: 2rem 0; display: none;">No tienes publicaciones activas</div>
+            <div class="publish-modal-actions">
+                <button id="pubs-close-btn" class="publish-action-btn">Cerrar</button>
+            </div>
+        </div>
+    </div>
 
     <div class="teleprompter-container">
         <!-- Teleprompter Panel -->
@@ -76,6 +269,7 @@
             <div id="teleprompter-controls">
                 <nav>
                     <button id="publish-btn">Publicar</button>
+                    <button id="pubs-btn">Publicaciones</button>
                     <button id="background-btn">Background</button>
                     <button id="teleprompter-play-btn" class="tp-ctrl-btn" title="Play">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 40 40"><path d="M13.333 31.583V8.25l18.334 11.667Zm2.792-11.666Zm0 6.625L26.5 19.917l-10.375-6.625Z"></path></svg>
@@ -234,6 +428,25 @@
                 this.audioLoadedInfo = document.getElementById('audio-loaded-info');
                 this.audioRemoveBtn = document.getElementById('audio-remove-btn');
 
+                // Publish Modal Elements
+                this.publishModal = document.getElementById('publish-modal');
+                this.publishBtn = document.getElementById('publish-btn');
+                this.publishConfirmBtn = document.getElementById('publish-confirm-btn');
+                this.publishCancelBtn = document.getElementById('publish-cancel-btn');
+                this.publishTitleInput = document.getElementById('publish-title');
+                this.periodOptions = document.querySelector('.period-options');
+                this.langOptions = document.querySelector('.lang-options');
+                this.publishCoverInput = document.getElementById('publish-cover-image');
+                this.publishCoverName = document.getElementById('publish-cover-name');
+                this.coverImageData = null;
+
+                // Publications Modal Elements
+                this.pubsModal = document.getElementById('pubs-modal');
+                this.pubsBtn = document.getElementById('pubs-btn');
+                this.pubsList = document.getElementById('pubs-list');
+                this.pubsEmpty = document.getElementById('pubs-empty');
+                this.pubsCloseBtn = document.getElementById('pubs-close-btn');
+
                 this.isPlaying = false;
                 this.isDrawerExpanded = false;
                 this.audioReady = false;
@@ -243,25 +456,26 @@
                 this.bgImageData = null;
                 this.isPreRolling = false;
 
-
                 this.init();
             }
 
             init() {
+                // Teleprompter controls
                 this.script.addEventListener('input', () => this.updateText());
                 this.playBtn.addEventListener('click', () => this.play());
                 this.pauseBtn.addEventListener('click', () => this.pause());
                 this.stopBtn.addEventListener('click', () => this.stop());
+                document.getElementById('background-btn').addEventListener('click', () => this.toggleDrawer());
+
+                // Style controls
+                this.bgColorPicker.addEventListener('input', () => this.applyBackground());
+                this.textColorPicker.addEventListener('input', (e) => this.textContent.style.color = e.target.value);
+                this.textSizeSlider.addEventListener('input', (e) => this.updateTextSize(e.target.value));
+                this.marginSlider.addEventListener('input', (e) => this.updateMargin(e.target.value));
+                this.speedSlider.addEventListener('input', (e) => this.updateSpeed(e.target.value));
 
                 // Background tabs
-                this.bgTabs.forEach(tab => {
-                    tab.addEventListener('click', () => this.switchBgMode(tab.dataset.bgMode));
-                });
-
-                // Solid color
-                this.bgColorPicker.addEventListener('input', () => this.applyBackground());
-
-                // Gradient presets
+                this.bgTabs.forEach(tab => tab.addEventListener('click', () => this.switchBgMode(tab.dataset.bgMode)));
                 this.gradientPresets.forEach(preset => {
                     preset.style.background = preset.dataset.gradient;
                     preset.addEventListener('click', () => {
@@ -271,64 +485,204 @@
                         this.display.style.backgroundColor = 'transparent';
                     });
                 });
-
-                // Custom gradient
-                this.gradientAngle.addEventListener('input', (e) => {
-                    this.gradientAngleDisplay.textContent = e.target.value;
-                });
+                this.gradientAngle.addEventListener('input', (e) => this.gradientAngleDisplay.textContent = e.target.value);
                 this.gradientApplyBtn.addEventListener('click', () => this.applyCustomGradient());
-
-                // Image upload
                 this.bgImageInput.addEventListener('change', (e) => this.handleImageUpload(e));
                 this.bgImageFit.addEventListener('change', () => this.applyBackground());
-                
-                // Hide opacity controls as they are no longer relevant with the new layout
                 this.bgImageOpacity.parentElement.style.display = 'none';
 
-                this.textColorPicker.addEventListener('input', (e) => this.textContent.style.color = e.target.value);
-                this.textSizeSlider.addEventListener('input', (e) => this.updateTextSize(e.target.value));
-                this.marginSlider.addEventListener('input', (e) => this.updateMargin(e.target.value));
-                this.speedSlider.addEventListener('input', (e) => this.updateSpeed(e.target.value));
+                // Audio controls
+                this.audioFileInput.addEventListener('change', (e) => this.handleAudioFile(e));
+                this.audioRemoveBtn.addEventListener('click', () => this.removeAudio());
 
-                document.getElementById('background-btn').addEventListener('click', () => {
-                    this.toggleDrawer();
-                });
+                // Publish controls
+                this.publishBtn.addEventListener('click', () => this.openPublishModal());
+                this.publishCancelBtn.addEventListener('click', () => this.closePublishModal());
+                this.publishConfirmBtn.addEventListener('click', () => this.handlePublish());
 
+                this.periodOptions.addEventListener('click', (e) => this.handleOptionButtons(e, this.periodOptions));
+                this.langOptions.addEventListener('click', (e) => this.handleOptionButtons(e, this.langOptions));
+                this.publishCoverInput.addEventListener('change', (e) => this.handleCoverImage(e));
 
+                // Publications controls
+                this.pubsBtn.addEventListener('click', () => this.openPubsModal());
+                this.pubsCloseBtn.addEventListener('click', () => this.closePubsModal());
+
+                // Initial state
                 this.updateText();
                 this.updateTextSize(this.textSizeSlider.value);
                 this.updateMargin(this.marginSlider.value);
                 this.updateSpeed(this.speedSlider.value);
+            }
 
-                // Audio
-                this.audioFileInput.addEventListener('change', (e) => {
-                    const file = e.target.files[0];
-                    if (!file) return;
-                    this.audioPlayer.src = URL.createObjectURL(file);
-                    this.audioLoadedInfo.style.display = '';
-                    this.audioReady = true;
+            handleAudioFile(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                this.audioPlayer.src = URL.createObjectURL(file);
+                this.audioLoadedInfo.style.display = '';
+                this.audioReady = true;
+                this.speedSlider.min = 5; this.speedSlider.max = 25; this.speedSlider.value = 10;
+                this.updateSpeed(this.speedSlider.value);
+            }
 
-                    // Change speed slider to control playbackRate
-                    this.speedSlider.min = 5; // 0.5x
-                    this.speedSlider.max = 25; // 2.5x
-                    this.speedSlider.value = 10; // 1.0x
-                    this.updateSpeed(this.speedSlider.value);
+            removeAudio() {
+                this.audioPlayer.pause();
+                this.audioPlayer.src = '';
+                this.audioLoadedInfo.style.display = 'none';
+                this.audioReady = false;
+                if (this.audioPlayer) this.audioPlayer.playbackRate = 1.0;
+                this.speedSlider.min = 1; this.speedSlider.max = 50; this.speedSlider.value = 10;
+                this.updateSpeed(this.speedSlider.value);
+            }
+
+            handleOptionButtons(e, container) {
+                if (e.target.tagName === 'BUTTON') {
+                    const activeButton = container.querySelector('.active');
+                    if (activeButton) activeButton.classList.remove('active');
+                    e.target.classList.add('active');
+                }
+            }
+
+            handleCoverImage(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    this.coverImageData = ev.target.result;
+                    this.publishCoverName.textContent = file.name;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            openPublishModal() {
+                this.coverImageData = null;
+                this.publishCoverInput.value = '';
+                this.publishCoverName.textContent = 'Sin imagen - se usará el fondo actual';
+                if (this.publishModal) this.publishModal.style.display = 'flex';
+            }
+
+            closePublishModal() {
+                if (this.publishModal) this.publishModal.style.display = 'none';
+            }
+
+            openPubsModal() {
+                this.renderPubsList();
+                if (this.pubsModal) this.pubsModal.style.display = 'flex';
+            }
+
+            closePubsModal() {
+                if (this.pubsModal) this.pubsModal.style.display = 'none';
+            }
+
+            renderPubsList() {
+                const userID = localStorage.getItem('grafiter_userID');
+                const salons = [
+                    { key: 'voiceNotes_es', label: 'Español' },
+                    { key: 'voiceNotes_it', label: 'Italiano' },
+                    { key: 'voiceNotes_us', label: 'Inglés' },
+                ];
+                const pubs = [];
+
+                salons.forEach(salon => {
+                    const notes = JSON.parse(localStorage.getItem(salon.key) || '[]');
+                    notes.forEach(note => {
+                        if (note.userID === userID && !note.cancelled) {
+                            pubs.push({ ...note, storageKey: salon.key, salonLabel: salon.label });
+                        }
+                    });
                 });
-                this.audioRemoveBtn.addEventListener('click', () => {
-                    this.audioPlayer.pause();
-                    this.audioPlayer.src = '';
-                    this.audioLoadedInfo.style.display = 'none';
-                    this.audioReady = false;
-                    if (this.audioPlayer) {
-                        this.audioPlayer.playbackRate = 1.0;
-                    }
 
-                    // Reset speed slider to manual mode
-                    this.speedSlider.min = 1;
-                    this.speedSlider.max = 50;
-                    this.speedSlider.value = 10;
-                    this.updateSpeed(this.speedSlider.value);
+                this.pubsList.innerHTML = '';
+                if (pubs.length === 0) {
+                    this.pubsEmpty.style.display = '';
+                    return;
+                }
+                this.pubsEmpty.style.display = 'none';
+
+                pubs.forEach(pub => {
+                    const item = document.createElement('div');
+                    item.className = 'pub-item';
+                    item.innerHTML = `
+                        <div class="pub-item-info">
+                            <div class="pub-item-title">${pub.title || 'Sin título'}</div>
+                            <div class="pub-item-code">Código: ${pub.pubCode || '---'}</div>
+                            <div class="pub-item-salon">${pub.salonLabel}</div>
+                        </div>
+                        <button class="pub-item-delete" title="Eliminar">🗑️</button>
+                    `;
+                    item.querySelector('.pub-item-delete').addEventListener('click', () => {
+                        if (confirm(`¿Eliminar "${pub.title}"?`)) {
+                            this.deletePub(pub.storageKey, pub.id);
+                        }
+                    });
+                    this.pubsList.appendChild(item);
                 });
+            }
+
+            deletePub(storageKey, noteId) {
+                let notes = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                notes = notes.filter(n => n.id !== noteId);
+                localStorage.setItem(storageKey, JSON.stringify(notes));
+                this.renderPubsList();
+            }
+
+            calculateExpirationDate(publishPeriod, timestamp) {
+                const expirationDate = new Date(timestamp);
+                expirationDate.setDate(expirationDate.getDate() + 28);
+                return expirationDate;
+            }
+
+            handlePublish() {
+                const title = this.publishTitleInput.value.trim();
+                const content = this.script.value.trim();
+
+                if (!title || !content) {
+                    alert('Por favor, introduce un título y un guion para publicar.');
+                    return;
+                }
+
+                const selectedPeriod = this.periodOptions.querySelector('.active').dataset.period;
+                const selectedLang = this.langOptions.querySelector('.active').dataset.lang;
+                const storageKey = `voiceNotes_${selectedLang}`;
+
+                const timestamp = new Date();
+                const pubCode = Math.random().toString(36).substr(2, 6).toUpperCase();
+                const newNote = {
+                    id: Date.now(),
+                    pubCode: pubCode,
+                    timestamp: timestamp.toISOString(),
+                    publishPeriod: selectedPeriod,
+                    expirationDate: this.calculateExpirationDate(selectedPeriod, timestamp).toISOString(),
+                    type: 'text',
+                    title: title,
+                    content: content,
+                    country: selectedLang.toUpperCase(),
+                    language: selectedLang,
+                    userID: localStorage.getItem('grafiter_userID') || 'user_' + Date.now(),
+                    audioUrl: null,
+                    coverImage: this.coverImageData || null,
+                    style: {
+                        bgMode: this.bgMode,
+                        bgColor: this.bgColorPicker.value,
+                        bgGradient: this.bgMode === 'gradient' ? this.display.style.backgroundImage : null,
+                        bgImageData: this.bgMode === 'image' ? this.bgImageData : null,
+                        textColor: this.textColorPicker.value,
+                        fontSize: this.textSizeSlider.value,
+                        margin: this.marginSlider.value,
+                        speed: this.speedSlider.value,
+                    },
+                };
+
+                try {
+                    let notes = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                    notes.push(newNote);
+                    localStorage.setItem(storageKey, JSON.stringify(notes));
+                    alert(`¡Publicado con éxito en el salón ${selectedLang.toUpperCase()}!\n\nCódigo de publicación: ${pubCode}\n\nGuarda este código para poder eliminar tu publicación.`);
+                    this.closePublishModal();
+                } catch (error) {
+                    console.error('Error al guardar la publicación:', error);
+                    alert('Hubo un error al intentar guardar la publicación.');
+                }
             }
 
             updateText() {
@@ -345,78 +699,53 @@
                 this.controls.style.bottom = '0';
                 this.laserCursor.style.display = 'block';
                 
-                // Push content down so it scrolls fully bottom-to-top
                 const displayH = this.display.clientHeight;
                 document.getElementById('scroll-spacer').style.height = displayH + 'px';
-                this.textContent.style.paddingTop = '0'; // No gap between image and text
+                this.textContent.style.paddingTop = '0';
                 this.textContent.style.paddingBottom = displayH + 'px';
                 this.display.style.overflowY = 'hidden';
 
                 this.animFrame = requestAnimationFrame((t) => this.scrollStep(t));
 
                 if (this.audioReady && this.audioPlayer.currentTime < 0.1) {
-                    // --- Starting fresh with audio: Start pre-roll ---
                     this.isPreRolling = true;
-                    this.lastFrameTime = performance.now(); // Start timer for pre-roll scroll
-
+                    this.lastFrameTime = performance.now();
                     setTimeout(() => {
                         if (this.isPlaying) {
-                            // --- Transition from Pre-roll to Audio-Sync ---
                             const maxScroll = this.display.scrollHeight - this.display.clientHeight;
                             if (maxScroll > 0 && this.audioPlayer.duration > 0) {
                                 const progress = this.display.scrollTop / maxScroll;
                                 const targetTime = progress * this.audioPlayer.duration;
-                                
-                                // Jump audio to match what's on screen
                                 if (targetTime < this.audioPlayer.duration) {
                                     this.audioPlayer.currentTime = targetTime;
                                 }
                             }
-                            
                             this.audioPlayer.play();
-                            this.isPreRolling = false; // Switch to audio-driven scroll
+                            this.isPreRolling = false;
                         }
-                    }, 5000); // 5-second delay
+                    }, 5000);
                 } else if (this.audioReady) {
-                    // --- Resuming from pause ---
                     this.audioPlayer.play();
                 } else {
-                    // --- No audio ---
                     this.lastFrameTime = performance.now();
                 }
             }
 
             scrollStep(timestamp) {
                 if (!this.isPlaying) return;
-
                 const maxScroll = this.display.scrollHeight - this.display.clientHeight;
 
-                // Use audio-driven scroll ONLY if audio is ready AND we are past the pre-roll phase.
                 if (this.audioReady && this.audioPlayer.duration > 0 && !this.isPreRolling) {
-                    // --- AUDIO-DRIVEN SCROLL ---
                     const audioProgress = this.audioPlayer.currentTime / this.audioPlayer.duration;
                     this.display.scrollTop = audioProgress * maxScroll;
-
-                    // Stop when audio ends.
-                    if (this.audioPlayer.ended) {
-                        this.stop();
-                        return;
-                    }
+                    if (this.audioPlayer.ended) { this.stop(); return; }
                 } else {
-                    // --- TIME-DRIVEN SCROLL (Used for No-Audio mode AND Pre-roll) ---
                     const delta = timestamp - this.lastFrameTime;
                     this.lastFrameTime = timestamp;
                     const pxPerSec = parseInt(this.speedSlider.value) * 3;
                     this.display.scrollTop += pxPerSec * (delta / 1000);
-
-                    // Stop when all text has scrolled off screen
-                    if (this.display.scrollTop >= maxScroll) {
-                        this.stop();
-                        return;
-                    }
+                    if (this.display.scrollTop >= maxScroll) { this.stop(); return; }
                 }
-
-                // Continue the animation loop
                 this.animFrame = requestAnimationFrame((t) => this.scrollStep(t));
             }
 
@@ -469,9 +798,7 @@
                 if (this.audioReady) {
                     const playbackRate = parseFloat(speed) / 10;
                     this.speedDisplay.textContent = `${playbackRate.toFixed(1)}x`;
-                    if (this.audioPlayer) {
-                        this.audioPlayer.playbackRate = playbackRate;
-                    }
+                    if (this.audioPlayer) this.audioPlayer.playbackRate = playbackRate;
                 } else {
                     this.speedDisplay.textContent = parseInt(speed);
                 }
@@ -487,12 +814,10 @@
 
             applyBackground() {
                 if (this.bgMode === 'image') {
-                    // When image is active, teleprompter background is black.
                     this.display.style.backgroundImage = 'none';
                     this.display.style.backgroundColor = '#000';
                     this.applyImageBackground();
                 } else {
-                    // For color or gradient, apply to the display and hide the image wrapper.
                     this.imageWrapperForScroll.style.display = 'none';
                     if (this.bgMode === 'color') {
                         this.display.style.backgroundImage = 'none';
@@ -535,18 +860,11 @@
                 }
                 this.imageWrapperForScroll.style.display = 'block';
                 this.bgImageLayer.src = this.bgImageData;
-
                 const fit = this.bgImageFit.value;
-                if (fit === 'stretch') {
-                    this.bgImageLayer.style.objectFit = 'fill';
-                } else {
-                    this.bgImageLayer.style.objectFit = fit;
-                }
+                this.bgImageLayer.style.objectFit = (fit === 'stretch') ? 'fill' : fit;
             }
-
         }
 
-        // Since we removed the main app, we instantiate Teleprompter directly.
         document.addEventListener('DOMContentLoaded', () => {
             new Teleprompter(null);
         });
