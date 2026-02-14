@@ -436,3 +436,122 @@
         opacity: 1;
     }
 }
+
+/* Responsive - Tablets */
+@media (max-width: 768px) {
+    .main-content {
+        padding-top: 5rem;
+    }
+
+    .period-section {
+        padding: 1.5rem 1rem;
+    }
+
+    .period-title {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .voice-posts {
+        grid-template-rows: repeat(2, 170px);
+        grid-auto-columns: 170px;
+        gap: 1rem;
+    }
+
+    .voice-post {
+        width: 170px;
+        height: 170px;
+    }
+
+    .tp-viewer-title {
+        font-size: 0.8rem;
+    }
+
+    .tp-viewer-btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 480px) {
+    .main-content {
+        padding-top: 4rem;
+    }
+
+    .period-section {
+        padding: 1rem 0.5rem;
+    }
+
+    .period-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .voice-posts {
+        grid-template-rows: repeat(2, 140px);
+        grid-auto-columns: 140px;
+        gap: 0.75rem;
+    }
+
+    .voice-post {
+        width: 140px;
+        height: 140px;
+        border-radius: 8px;
+    }
+
+    .post-title {
+        font-size: 0.65rem;
+        padding: 0.35rem;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .post-date {
+        font-size: 0.5rem;
+        padding: 0.3rem;
+        border-radius: 0 0 8px 8px;
+    }
+
+    .empty-slot {
+        border-radius: 8px !important;
+    }
+
+    .grafiter-watermark {
+        font-size: 0.9rem;
+    }
+
+    .tp-viewer-close {
+        width: 34px;
+        height: 34px;
+        font-size: 1.2rem;
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+
+    .tp-viewer-title {
+        font-size: 0.7rem;
+        top: 0.5rem;
+        left: 0.5rem;
+        padding: 0.3rem 0.6rem;
+        max-width: 60%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .tp-viewer-controls {
+        padding: 0.75rem;
+        gap: 0.75rem;
+    }
+
+    .tp-viewer-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+        border-radius: 6px;
+    }
+
+    #empty-state {
+        padding: 2rem 1rem;
+        font-size: 0.85rem;
+    }
+}
