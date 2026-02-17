@@ -1,0 +1,79 @@
+/* Estilos para el carrusel continuo de patrocinadores */
+.sponsors {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 80%;
+    padding: 0;
+    background: transparent;
+    border-top: none;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.sponsors-container {
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+}
+
+.sponsors-track {
+    display: flex;
+    width: max-content;
+    animation: scroll-sponsors 20s linear infinite;
+}
+
+.sponsors-track:hover {
+    animation-play-state: paused;
+}
+
+.sponsor-item {
+    flex: 0 0 auto;
+    width: 250px;
+    padding: 0.75rem 1rem;
+    box-sizing: border-box;
+    text-align: center;
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.sponsor-item-content {
+    padding: 0.75rem 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.sponsor-item-content img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 0.5rem;
+}
+
+.sponsor-item-content:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sponsor-item {
+        width: 200px;
+    }
+}
