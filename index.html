@@ -61,7 +61,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
+            padding: 5.5rem 2rem 0;
             transition: margin-left 0.3s ease;
         }
 
@@ -188,7 +188,7 @@
             z-index: 10;
             width: 90%;
             max-width: 1080px;
-            margin: 100px auto 2rem;
+            margin: 15rem auto 1.5rem;
             display: flex;
             justify-content: center;
         }
@@ -201,11 +201,114 @@
             box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
         }
 
+        /* Teleprompter input (encima del video) */
+        .teleprompter-input {
+            width: 90%;
+            max-width: 1080px;
+            margin: 0 auto 1rem;
+        }
+
+        .teleprompter-textarea {
+            width: 100%;
+            min-height: 120px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            color: white;
+            font-size: 1rem;
+            line-height: 1.6;
+            resize: vertical;
+            font-family: inherit;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+
+        .teleprompter-textarea:focus {
+            outline: none;
+            border-color: rgba(255, 165, 0, 0.5);
+        }
+
+        .teleprompter-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Teleprompter player (debajo del video) */
+        .teleprompter-player {
+            width: 90%;
+            max-width: 1080px;
+            margin: 0 auto 2rem;
+        }
+
+        .teleprompter-display {
+            width: 100%;
+            height: 180px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 0.75rem;
+        }
+
+        .teleprompter-scroll {
+            position: absolute;
+            width: 100%;
+            padding: 1rem 2.5rem;
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: #FFD700;
+            line-height: 1.8;
+            text-align: center;
+            will-change: transform;
+        }
+
+        .teleprompter-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .tp-btn {
+            padding: 0.45rem 1rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tp-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        .tp-btn.active {
+            background: linear-gradient(135deg, #FFA500, #FFD700);
+            border-color: transparent;
+            color: white;
+        }
+
+        .tp-divider {
+            width: 1px;
+            height: 1.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            margin: 0 0.25rem;
+        }
+
+        /* Salones dropdown */
+        .salones-selector {
+            position: relative;
+        }
+
         /* Bandeja de entrada */
         .inbox-section {
             width: 90%;
             max-width: 960px;
-            margin: 3rem auto 2rem;
+            margin: 0.5rem auto 20rem;
             position: relative;
             z-index: 10;
         }
@@ -216,6 +319,7 @@
             color: rgba(255, 255, 255, 0.9);
             margin-bottom: 1.5rem;
             letter-spacing: 0.05em;
+            text-align: center;
         }
 
         .inbox-grid {
@@ -420,18 +524,16 @@
         <h1><button id="grafiter-btn" style="background: none; border: none; cursor: pointer; font: inherit; color: inherit;"><span style="font-size: 1.1em; filter: none; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.5);">😎</span> GRAFITER</button></h1>
         
         <div class="header-buttons">
-            <!-- Language selector -->
-            <div class="language-selector">
-                <button class="language-more" id="language-more">+</button>
-                <div class="language-dropdown" id="language-dropdown">
-                    <div class="language-option" data-lang="es" data-url="SALONES/es.html">🇪🇸 Español</div>
-                    <div class="language-option" data-lang="us" data-url="SALONES/us.html">🇺🇸 English</div>
-                    <div class="language-option" data-lang="it" data-url="SALONES/it.html">🇮🇹 Italiano</div>
+            <button class="header-button" id="btn-inicio">Inicio</button>
+            <button class="header-button" id="btn-eventos">Eventos</button>
+            <div class="salones-selector">
+                <button class="header-button" id="btn-salones">Salones</button>
+                <div class="language-dropdown" id="salones-dropdown">
+                    <div class="language-option" data-url="SALONES/es.html">🇪🇸 Español</div>
+                    <div class="language-option" data-url="SALONES/us.html">🇺🇸 English</div>
+                    <div class="language-option" data-url="SALONES/it.html">🇮🇹 Italiano</div>
                 </div>
             </div>
-            <button class="header-button active" data-period="day">Day</button>
-            <button class="header-button" data-period="week">Week</button>
-            <button class="header-button" data-period="month">Month</button>
         </div>
     </header>
 
@@ -483,8 +585,25 @@
 
     <!-- Main content -->
     <main class="main-content">
-        <!-- Teleprompter Video -->
-        <section class="teleprompter-section">
+        <!-- Texto para el teleprompter -->
+        <div class="teleprompter-input">
+            <textarea id="tp-textarea" class="teleprompter-textarea" placeholder="Escribe o pega aquí el texto para el teleprompter..."></textarea>
+        </div>
+
+        <!-- Reproductor teleprompter -->
+        <div class="teleprompter-player">
+            <div class="teleprompter-display" id="tp-display">
+                <div class="teleprompter-scroll" id="tp-scroll"></div>
+            </div>
+            <div class="teleprompter-controls">
+                <button class="tp-btn" id="tp-start">▶ Iniciar</button>
+                <button class="tp-btn" id="tp-pause">⏸ Pausar</button>
+                <button class="tp-btn" id="tp-reset">⏮ Reiniciar</button>
+            </div>
+        </div>
+
+        <!-- Video -->
+        <section class="teleprompter-section" id="teleprompter">
             <iframe class="teleprompter-video" src="https://www.youtube.com/embed/RuSBj_BUEpc" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </section>
 
@@ -578,66 +697,48 @@
                 this.isRecording = false;
                 this.mediaRecorder = null;
                 this.audioChunks = [];
-                this.currentPeriod = 'day';
-                
+
                 this.recordButton = document.getElementById('record-button');
                 this.statusText = document.getElementById('status-text');
                 this.voiceWall = document.getElementById('voice-wall');
                 this.instructions = document.getElementById('instructions');
-                this.headerButtons = document.querySelectorAll('.header-button');
-                this.languageMore = document.getElementById('language-more');
-                this.languageDropdown = document.getElementById('language-dropdown');
-                this.languageOptions = document.querySelectorAll('.language-option');
-                
+
                 this.init();
             }
 
             init() {
                 this.recordButton.addEventListener('click', () => this.toggleRecording());
-                this.headerButtons.forEach(button => {
-                    button.addEventListener('click', (e) => this.changePeriod(e.target.dataset.period));
+
+                // Botones de navegación
+                document.getElementById('btn-inicio').addEventListener('click', () => {
+                    document.getElementById('teleprompter').scrollIntoView({ behavior: 'smooth' });
                 });
-                
-                // Language selector events
-                this.languageMore.addEventListener('click', () => this.toggleLanguageDropdown());
-                this.languageOptions.forEach(option => {
-                    option.addEventListener('click', (e) => this.selectLanguage(e.currentTarget));
+
+                document.getElementById('btn-eventos').addEventListener('click', () => {
+                    window.location.href = 'eventos.html';
                 });
-                
-                // Close dropdown when clicking outside
+
+                const salonesDropdown = document.getElementById('salones-dropdown');
+                document.getElementById('btn-salones').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    salonesDropdown.classList.toggle('show');
+                });
+
+                document.querySelectorAll('#salones-dropdown .language-option').forEach(opt => {
+                    opt.addEventListener('click', (e) => {
+                        const url = e.currentTarget.dataset.url;
+                        if (url) window.location.href = url;
+                    });
+                });
+
                 document.addEventListener('click', (e) => {
-                    if (!e.target.closest('.language-selector')) {
-                        this.languageDropdown.classList.remove('show');
+                    if (!e.target.closest('.salones-selector')) {
+                        salonesDropdown.classList.remove('show');
                     }
                 });
-                
+
                 this.loadNotes();
                 this.updateInstructions();
-            }
-
-            changePeriod(period) {
-                this.currentPeriod = period;
-                
-                // Update active button
-                this.headerButtons.forEach(btn => btn.classList.remove('active'));
-                document.querySelector(`[data-period="${period}"]`).classList.add('active');
-                
-            }
-
-            toggleLanguageDropdown() {
-                this.languageDropdown.classList.toggle('show');
-            }
-
-
-            selectLanguage(optionElement) {
-                const lang = optionElement.dataset.lang;
-                const url = optionElement.dataset.url;
-                
-                this.languageDropdown.classList.remove('show');
-                
-                if (url) {
-                    window.location.href = url;
-                }
             }
 
             async toggleRecording() {
@@ -757,10 +858,87 @@
             }
         }
 
+        class TeleprompterApp {
+            constructor() {
+                this.isRunning = false;
+                this.animationId = null;
+                this.posY = 0;
+                this.started = false;
+                this.speeds = { slow: 0.6, normal: 1.2, fast: 2.2 };
+                this.currentSpeed = 'normal';
+
+                this.textarea = document.getElementById('tp-textarea');
+                this.display = document.getElementById('tp-display');
+                this.scrollEl = document.getElementById('tp-scroll');
+
+                this.init();
+            }
+
+            init() {
+                document.getElementById('tp-start').addEventListener('click', () => this.start());
+                document.getElementById('tp-pause').addEventListener('click', () => this.pause());
+                document.getElementById('tp-reset').addEventListener('click', () => this.reset());
+                document.querySelectorAll('.tp-speed-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.setSpeed(e.target.dataset.speed));
+                });
+            }
+
+            start() {
+                const text = this.textarea.value.trim();
+                if (!text || this.isRunning) return;
+
+                if (!this.started) {
+                    this.scrollEl.textContent = text;
+                    this.posY = this.display.offsetHeight;
+                    this.started = true;
+                }
+
+                this.isRunning = true;
+                document.getElementById('tp-start').classList.add('active');
+                this.animate();
+            }
+
+            pause() {
+                if (!this.isRunning) return;
+                this.isRunning = false;
+                cancelAnimationFrame(this.animationId);
+                document.getElementById('tp-start').classList.remove('active');
+            }
+
+            reset() {
+                this.pause();
+                this.started = false;
+                this.posY = 0;
+                this.scrollEl.style.transform = 'translateY(0)';
+                this.scrollEl.textContent = '';
+            }
+
+            setSpeed(speed) {
+                this.currentSpeed = speed;
+                document.querySelectorAll('.tp-speed-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.speed === speed);
+                });
+            }
+
+            animate() {
+                if (!this.isRunning) return;
+                this.posY -= this.speeds[this.currentSpeed];
+
+                if (this.posY < -(this.scrollEl.offsetHeight)) {
+                    this.reset();
+                    return;
+                }
+
+                this.scrollEl.style.transform = `translateY(${this.posY}px)`;
+                this.animationId = requestAnimationFrame(() => this.animate());
+            }
+        }
+
         // Initialize both apps when the page loads
         document.addEventListener('DOMContentLoaded', () => {
             new VoiceWallApp();
             new RegistrationForm();
+            new TeleprompterApp();
         });
     </script>
 </body>

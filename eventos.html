@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos - GRAFITER</title>
+    <link rel="stylesheet" href="assets/css/common.css">
+    <style>
+        .events-main {
+            position: relative;
+            z-index: 10;
+            padding: 6rem 2rem 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .events-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #FFA500, #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .events-subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .events-empty {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 1rem;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            line-height: 2;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.6rem 1.2rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="nebula-background"></div>
+    <div class="glow-overlay">
+        <div class="glow-sphere"></div>
+        <div class="glow-sphere"></div>
+        <div class="glow-sphere"></div>
+    </div>
+
+    <header class="header">
+        <h1>
+            <a href="index.html" style="text-decoration: none; color: inherit; background: none; -webkit-text-fill-color: inherit;">
+                <span style="font-size: 1.1em;">😎</span> GRAFITER
+            </a>
+        </h1>
+    </header>
+
+    <main class="events-main">
+        <h2 class="events-title">Eventos</h2>
+        <p class="events-subtitle">Próximos eventos de la comunidad GRAFITER</p>
+
+        <div class="events-empty">
+            📅 No hay eventos programados por el momento.<br>
+            <small>Pronto anunciaremos actividades para la comunidad.</small>
+        </div>
+
+        <a href="index.html" class="back-btn">← Volver a inicio</a>
+    </main>
+</body>
+</html>
