@@ -1,17 +1,23 @@
 /* Estilos para el carrusel continuo de patrocinadores */
 .sponsors {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    top: 80%;
-    padding: 0;
+    width: 100%;
+    padding: 0.5rem 0 1.5rem;
     background: transparent;
-    border-top: none;
-    z-index: 50;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    justify-content: center;
     overflow: hidden;
+}
+
+.sponsors-title {
+    margin: 0 0 4px 0;
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: lowercase;
+    color: #f5f57a;
+    text-shadow: 0 0 8px #f5f57a, 0 0 18px #e8e84a;
 }
 
 .sponsors-container {
@@ -32,48 +38,34 @@
 
 .sponsor-item {
     flex: 0 0 auto;
-    width: 250px;
-    padding: 0.75rem 1rem;
+    padding: 0 2.5mm;
     box-sizing: border-box;
-    text-align: center;
-    color: #fff;
-    font-size: 1.2rem;
-    font-weight: bold;
+    display: flex;
+    align-items: center;
 }
 
 .sponsor-item-content {
-    padding: 0.75rem 1.5rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 0.75rem;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
-    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    color: #fff;
-    font-size: 1.2rem;
-    font-weight: bold;
+    transition: all 0.3s ease;
 }
 
 .sponsor-item-content img {
-    max-width: 100%;
-    max-height: 100%;
+    width: 120px;
+    height: 60px;
     object-fit: contain;
     border-radius: 0.5rem;
 }
 
 .sponsor-item-content:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    background: rgba(255, 255, 255, 0.1);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
     .sponsor-item {
-        width: 200px;
+        padding: 0 1.25mm;
     }
 }

@@ -60,9 +60,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
             padding: 2rem;
-            padding-top: 6rem;
             transition: margin-left 0.3s ease;
         }
 
@@ -181,6 +179,91 @@
             
             .voice-wall {
                 height: 300px;
+            }
+        }
+
+        .teleprompter-section {
+            width: 90%;
+            max-width: 900px;
+            margin: 100px auto 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .teleprompter-video {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            display: block;
+            border-radius: 0.75rem;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Bandeja de entrada */
+        .inbox-section {
+            width: 90%;
+            max-width: 960px;
+            margin: 3rem auto 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .inbox-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .inbox-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .inbox-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .inbox-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 165, 0, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .inbox-card-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .inbox-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #FFD700;
+            margin-bottom: 0.5rem;
+        }
+
+        .inbox-card-desc {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .inbox-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .inbox-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -349,20 +432,6 @@
         </div>
     </header>
 
-    <!-- Sponsors Carousel -->
-    <div class="sponsors">
-        <div class="sponsors-container">
-            <div class="sponsors-track">
-                <div class="sponsor-item"><a href="https://wa.me/qr/TMYWH3MF6QOPI1" target="_blank" rel="noopener noreferrer" class="sponsor-item-content"><img src="assets/img/HYS.jpg" alt="Tienda's HYS"></a></div>
-                <div class="sponsor-item"><a href="https://platzi.com" target="_blank" rel="noopener noreferrer" class="sponsor-item-content"><img src="assets/img/platzi.jpg" alt="Platzi"></a></div>
-                <div class="sponsor-item"><a href="https://windsurf.com" target="_blank" rel="noopener noreferrer" class="sponsor-item-content"><img src="assets/img/Windsurf.png" alt="Windsurf"></a></div>
-                <div class="sponsor-item"><a href="https://vercel.com" target="_blank" rel="noopener noreferrer" class="sponsor-item-content"><img src="assets/img/vercel0.webp" alt="Vercel"></a></div>
-                <div class="sponsor-item"><a href="https://www.tiktok.com/@wendymw4?_r=1&_t=ZN-940XMFvjhwM" target="_blank" rel="noopener noreferrer" class="sponsor-item-content"><img src="assets/img/wendy.jpeg" alt="Wendy MW"></a></div>
-                <div class="sponsor-item"><a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" class="sponsor-item-content"><img src="assets/img/youtube.webp" alt="YouTube"></a></div>
-            </div>
-        </div>
-    </div>
-
     <!-- Sidebar with Registration Form -->
     <aside id="register-form-section" class="register-form-section" style="display: none;">
         <div class="sidebar-header">
@@ -409,6 +478,13 @@
         </form>
     </aside>
 
+    <!-- Teleprompter Video -->
+    <section class="teleprompter-section">
+        <video class="teleprompter-video" controls>
+            <source src="assets/video/presentacion.mp4" type="video/mp4">
+        </video>
+    </section>
+
     <!-- Main content -->
     <main class="main-content">
         <div id="loading" class="loading" style="display: none;">
@@ -432,6 +508,65 @@
             <div id="instructions" class="instructions"></div>
         </div>
     </main>
+
+    <!-- Bandeja de entrada -->
+    <section class="inbox-section">
+        <h2 class="inbox-title">¿Cómo funciona GRAFITER?</h2>
+        <div class="inbox-grid">
+
+            <div class="inbox-card">
+                <div class="inbox-card-icon">🎙️</div>
+                <h3 class="inbox-card-title">Mural de Voces</h3>
+                <p class="inbox-card-desc">Graba mensajes de voz y publícalos en el mural en tiempo real. Cada burbuja representa una voz de la comunidad.</p>
+            </div>
+
+            <div class="inbox-card">
+                <div class="inbox-card-icon">🌐</div>
+                <h3 class="inbox-card-title">Salones por idioma</h3>
+                <p class="inbox-card-desc">Accede a espacios en Español, English e Italiano. Cada salón tiene su propia comunidad y conversaciones.</p>
+            </div>
+
+            <div class="inbox-card">
+                <div class="inbox-card-icon">📺</div>
+                <h3 class="inbox-card-title">Teleprompter</h3>
+                <p class="inbox-card-desc">Utiliza el video integrado como teleprompter para tus transmisiones en vivo o grabaciones de contenido.</p>
+            </div>
+
+            <div class="inbox-card">
+                <div class="inbox-card-icon">📚</div>
+                <h3 class="inbox-card-title">Recursos</h3>
+                <p class="inbox-card-desc">Próximamente: biblioteca de libros, guías y materiales de aprendizaje recomendados por la comunidad.</p>
+            </div>
+
+            <div class="inbox-card">
+                <div class="inbox-card-icon">🤝</div>
+                <h3 class="inbox-card-title">Colaboraciones</h3>
+                <p class="inbox-card-desc">Conectamos creadores, marcas y comunidades. Si quieres aparecer en GRAFITER, escríbenos.</p>
+            </div>
+
+            <div class="inbox-card">
+                <div class="inbox-card-icon">⚙️</div>
+                <h3 class="inbox-card-title">Modos de uso</h3>
+                <p class="inbox-card-desc">Modo día, semana y mes para filtrar el contenido del mural según tu preferencia de tiempo.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Sponsors Carousel -->
+    <div class="sponsors">
+        <p class="sponsors-title">colaboraciones</p>
+        <div class="sponsors-container">
+            <div class="sponsors-track">
+                <div class="sponsor-item"><a href="https://wa.me/qr/TMYWH3MF6QOPI1" target="_blank" rel="noopener noreferrer" class="sponsor-item-content"><img src="assets/img/HYS.jpg" alt="Tienda's HYS"></a></div>
+                <div class="sponsor-item"><a href="https://platzi.com" target="_blank" rel="noopener noreferrer" class="sponsor-item-content"><img src="assets/img/platzi-1.jpg" alt="Platzi"></a></div>
+                <div class="sponsor-item"><a href="https://windsurf.com" target="_blank" rel="noopener noreferrer" class="sponsor-item-content"><img src="assets/img/Windsurf.png" alt="Windsurf"></a></div>
+                <div class="sponsor-item"><a href="https://www.instagram.com/clickahorroco?igsh=MWRrYmlmZ3RteW51OQ==" target="_blank" rel="noopener noreferrer" class="sponsor-item-content"><img src="assets/img/click.jpg" alt="Click Ahorro"></a></div>
+                <div class="sponsor-item"><a href="https://www.tiktok.com/@wendymw4?_r=1&_t=ZN-940XMFvjhwM" target="_blank" rel="noopener noreferrer" class="sponsor-item-content"><img src="assets/img/wendy-2.jpg" alt="Wendy MW"></a></div>
+                <div class="sponsor-item"><a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" class="sponsor-item-content"><img src="assets/img/youtube.webp" alt="YouTube"></a></div>
+            </div>
+        </div>
+    </div>
 
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/carousel.js"></script>

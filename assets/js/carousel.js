@@ -2,32 +2,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const track = document.querySelector('.sponsors-track');
     if (!track) return;
 
-    const originalItems = track.innerHTML;
-    const itemCount = track.children.length;
-    const itemWidth = 250;
-    const originalWidth = itemCount * itemWidth;
-    const screenWidth = window.innerWidth;
+    const originalHTML = track.innerHTML;
 
-    // Duplicate enough times to fill at least 2x the screen
-    const copies = Math.ceil(screenWidth / originalWidth) + 1;
-    let duplicated = '';
-    for (let i = 0; i < copies; i++) {
-        duplicated += originalItems;
-    }
-    track.innerHTML = originalItems + duplicated;
+    // Render once to measure real item widths
+    requestAnimationFrame(() => {
+        let originalWidth = 0;
+        Array.from(track.children).forEach(item => {
+            originalWidth += item.getBoundingClientRect().width;
+        });
 
-    // Create keyframes dynamically based on actual original width
-    const speed = 50;
-    const duration = originalWidth / speed;
+        // Duplicate enough times so total width >= originalWidth + screenWidth
+        // This ensures there's always visible content during the animation reset
+        const screenWidth = window.innerWidth;
+        const copiesNeeded = Math.ceil((originalWidth + screenWidth * 2) / originalWidth);
 
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes scroll-sponsors {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-${originalWidth}px); }
+        let repeated = '';
+        for (let i = 0; i < copiesNeeded; i++) {
+            repeated += originalHTML;
         }
-    `;
-    document.head.appendChild(style);
+        track.innerHTML = originalHTML + repeated;
 
-    track.style.animationDuration = duration + 's';
+        // Animate exactly one set width — seamless because position 0 === position originalWidth visually
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes scroll-sponsors {
+                from { transform: translateX(0); }
+                to   { transform: translateX(-${originalWidth}px); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        const speed = 60; // px per second
+        track.style.animationDuration = (originalWidth / speed) + 's';
+        track.style.animationTimingFunction = 'linear';
+        track.style.animationIterationCount = 'infinite';
+    });
 });
