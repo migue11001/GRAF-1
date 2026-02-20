@@ -491,6 +491,8 @@
     </div>
 
     <script>
+        const BACKEND_URL = 'https://ejercicios-de-prueba-production.up.railway.app';
+
         class Teleprompter {
             constructor(app) {
                 this.app = app;
@@ -684,56 +686,79 @@
                 if (this.pubsModal) this.pubsModal.style.display = 'none';
             }
 
-            renderPubsList() {
-                const userID = localStorage.getItem('grafiter_userID');
-                const salons = [
-                    { key: 'voiceNotes_es', label: 'Español' },
-                    { key: 'voiceNotes_it', label: 'Italiano' },
-                    { key: 'voiceNotes_us', label: 'Inglés' },
-                ];
-                const pubs = [];
-
-                salons.forEach(salon => {
-                    const notes = JSON.parse(localStorage.getItem(salon.key) || '[]');
-                    notes.forEach(note => {
-                        if (note.userID === userID && !note.cancelled) {
-                            pubs.push({ ...note, storageKey: salon.key, salonLabel: salon.label });
-                        }
-                    });
-                });
-
-                this.pubsList.innerHTML = '';
-                if (pubs.length === 0) {
+            async renderPubsList() {
+                const token = localStorage.getItem('grafiter_token');
+                const session = JSON.parse(localStorage.getItem('grafiter_session') || '{}');
+                if (!token || !session.email) {
                     this.pubsEmpty.style.display = '';
                     return;
                 }
-                this.pubsEmpty.style.display = 'none';
 
-                pubs.forEach(pub => {
-                    const item = document.createElement('div');
-                    item.className = 'pub-item';
-                    item.innerHTML = `
-                        <div class="pub-item-info">
-                            <div class="pub-item-title">${pub.title || 'Sin título'}</div>
-                            <div class="pub-item-code">Código: ${pub.pubCode || '---'}</div>
-                            <div class="pub-item-salon">${pub.salonLabel}</div>
-                        </div>
-                        <button class="pub-item-delete" title="Eliminar">🗑️</button>
-                    `;
-                    item.querySelector('.pub-item-delete').addEventListener('click', () => {
-                        if (confirm(`¿Eliminar "${pub.title}"?`)) {
-                            this.deletePub(pub.storageKey, pub.id);
-                        }
+                this.pubsList.innerHTML = '<div style="color:#aaa;text-align:center">Cargando...</div>';
+
+                try {
+                    const langs = ['es', 'it', 'us'];
+                    const langLabel = { es: 'Español', it: 'Italiano', us: 'Inglés' };
+
+                    const responses = await Promise.all(
+                        langs.map(lang =>
+                            fetch(`${BACKEND_URL}/publications/${lang}`, {
+                                headers: { 'Authorization': `Bearer ${token}` }
+                            }).then(r => r.ok ? r.json() : [])
+                        )
+                    );
+
+                    // Juntar y filtrar solo las del usuario actual
+                    const allPubs = responses.flat().filter(p => p.user_email === session.email);
+
+                    this.pubsList.innerHTML = '';
+                    if (allPubs.length === 0) {
+                        this.pubsEmpty.style.display = '';
+                        return;
+                    }
+                    this.pubsEmpty.style.display = 'none';
+
+                    allPubs.forEach(pub => {
+                        const item = document.createElement('div');
+                        item.className = 'pub-item';
+                        item.innerHTML = `
+                            <div class="pub-item-info">
+                                <div class="pub-item-title">${pub.title || 'Sin título'}</div>
+                                <div class="pub-item-code">Código: ${pub.pub_code || '---'}</div>
+                                <div class="pub-item-salon">${langLabel[pub.language] || pub.language}</div>
+                            </div>
+                            <button class="pub-item-delete" title="Eliminar">🗑️</button>
+                        `;
+                        item.querySelector('.pub-item-delete').addEventListener('click', () => {
+                            if (confirm(`¿Eliminar "${pub.title}"?`)) {
+                                this.deletePub(pub.id);
+                            }
+                        });
+                        this.pubsList.appendChild(item);
                     });
-                    this.pubsList.appendChild(item);
-                });
+                } catch (error) {
+                    this.pubsList.innerHTML = '';
+                    this.pubsEmpty.style.display = '';
+                    console.error('Error cargando publicaciones:', error);
+                }
             }
 
-            deletePub(storageKey, noteId) {
-                let notes = JSON.parse(localStorage.getItem(storageKey) || '[]');
-                notes = notes.filter(n => n.id !== noteId);
-                localStorage.setItem(storageKey, JSON.stringify(notes));
-                this.renderPubsList();
+            async deletePub(noteId) {
+                const token = localStorage.getItem('grafiter_token');
+                try {
+                    const response = await fetch(`${BACKEND_URL}/publications/${noteId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (response.ok) {
+                        this.renderPubsList();
+                    } else {
+                        alert('No se pudo eliminar la publicación.');
+                    }
+                } catch (error) {
+                    alert('Error de conexión al eliminar.');
+                    console.error('Error al eliminar:', error);
+                }
             }
 
             calculateExpirationDate(publishPeriod, timestamp) {
@@ -742,7 +767,7 @@
                 return expirationDate;
             }
 
-            handlePublish() {
+            async handlePublish() {
                 const title = this.publishTitleInput.value.trim();
                 const content = this.script.value.trim();
 
@@ -751,26 +776,23 @@
                     return;
                 }
 
+                const token = localStorage.getItem('grafiter_token');
+                if (!token) {
+                    alert('Debes iniciar sesión para publicar.');
+                    return;
+                }
+
                 const selectedPeriod = this.periodOptions.querySelector('.active').dataset.period;
                 const selectedLang = this.langOptions.querySelector('.active').dataset.lang;
-                const storageKey = `voiceNotes_${selectedLang}`;
-
-                const timestamp = new Date();
                 const pubCode = Math.random().toString(36).substr(2, 6).toUpperCase();
-                const newNote = {
-                    id: Date.now(),
-                    pubCode: pubCode,
-                    timestamp: timestamp.toISOString(),
-                    publishPeriod: selectedPeriod,
-                    expirationDate: this.calculateExpirationDate(selectedPeriod, timestamp).toISOString(),
-                    type: 'text',
-                    title: title,
-                    content: content,
-                    country: selectedLang.toUpperCase(),
+
+                const payload = {
+                    title,
+                    content,
                     language: selectedLang,
-                    userID: localStorage.getItem('grafiter_userID') || 'user_' + Date.now(),
-                    audioUrl: null,
-                    coverImage: this.coverImageData || null,
+                    publish_period: selectedPeriod,
+                    pub_code: pubCode,
+                    cover_image: this.coverImageData || null,
                     style: {
                         bgMode: this.bgMode,
                         bgColor: this.bgColorPicker.value,
@@ -783,15 +805,35 @@
                     },
                 };
 
+                const confirmBtn = this.publishConfirmBtn;
+                confirmBtn.textContent = 'Publicando...';
+                confirmBtn.disabled = true;
+
                 try {
-                    let notes = JSON.parse(localStorage.getItem(storageKey) || '[]');
-                    notes.push(newNote);
-                    localStorage.setItem(storageKey, JSON.stringify(notes));
-                    alert(`¡Publicado con éxito en el salón ${selectedLang.toUpperCase()}!\n\nCódigo de publicación: ${pubCode}\n\nGuarda este código para poder eliminar tu publicación.`);
+                    const response = await fetch(`${BACKEND_URL}/publications`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        alert(data.detail || 'Error al publicar. Intenta de nuevo.');
+                        return;
+                    }
+
+                    alert(`¡Publicado con éxito en el salón ${selectedLang.toUpperCase()}!\n\nCódigo de publicación: ${pubCode}`);
                     this.closePublishModal();
                 } catch (error) {
-                    console.error('Error al guardar la publicación:', error);
-                    alert('Hubo un error al intentar guardar la publicación.');
+                    alert('No se pudo conectar con el servidor.');
+                    console.error('Error al publicar:', error);
+                } finally {
+                    confirmBtn.textContent = 'Publicar';
+                    confirmBtn.disabled = false;
                 }
             }
 

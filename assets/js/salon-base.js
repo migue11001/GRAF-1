@@ -1,3 +1,5 @@
+const BACKEND_URL = 'https://ejercicios-de-prueba-production.up.railway.app';
+
 class VoiceWallApp {
     constructor(config) {
         this.config = config;
@@ -454,25 +456,38 @@ class VoiceWallApp {
         };
     }
 
-    loadNotes() {
+    async loadNotes() {
+        const token = localStorage.getItem('grafiter_token');
+        if (!token) {
+            this.notes = [];
+            this.renderNotes();
+            return;
+        }
+
         try {
-            const savedNotes = localStorage.getItem(this.config.storageKey);
-            if (savedNotes) {
-                const noteMetadata = JSON.parse(savedNotes);
-                this.notes = noteMetadata.map(meta => {
-                    const note = { ...meta, timestamp: new Date(meta.timestamp), audioUrl: null };
-                    if (!note.expirationDate) {
-                        note.expirationDate = this.calculateExpirationDate(note.publishPeriod || 'day', note.timestamp);
-                    } else {
-                        note.expirationDate = new Date(note.expirationDate);
-                    }
-                    if (!note.userID) note.userID = this.generateUserID();
-                    return note;
-                });
-                console.log(`Publicaciones de ${this.config.lang} cargadas:`, this.notes.length);
-            } else {
+            const response = await fetch(`${BACKEND_URL}/publications/${this.config.lang}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) {
                 this.notes = [];
+                this.renderNotes();
+                return;
             }
+
+            const data = await response.json();
+            this.notes = data.map(meta => ({
+                ...meta,
+                timestamp: new Date(meta.created_at),
+                expirationDate: new Date(meta.expires_at),
+                userID: meta.user_id,
+                publishPeriod: meta.publish_period,
+                pubCode: meta.pub_code,
+                coverImage: meta.cover_image,
+                audioUrl: null,
+                cancelled: false,
+            }));
+            console.log(`Publicaciones de ${this.config.lang} cargadas:`, this.notes.length);
         } catch (error) {
             console.error('Error cargando publicaciones:', error);
             this.notes = [];
@@ -481,26 +496,6 @@ class VoiceWallApp {
     }
 
     saveNotes() {
-        const noteMetadata = this.notes.map(note => ({
-            id: note.id,
-            timestamp: note.timestamp,
-            language: note.language,
-            country: note.country || this.config.country,
-            type: note.type,
-            title: note.title,
-            content: note.content,
-            url: note.url,
-            description: note.description,
-            publishPeriod: note.publishPeriod,
-            expirationDate: note.expirationDate,
-            slotNumber: note.slotNumber,
-            userID: note.userID,
-            cancelled: note.cancelled,
-            pubCode: note.pubCode,
-            coverImage: note.coverImage || null,
-            style: note.style || null
-        }));
-        localStorage.setItem(this.config.storageKey, JSON.stringify(noteMetadata));
-        console.log(`Publicaciones de ${this.config.lang} guardadas:`, noteMetadata.length);
+        // El backend es la fuente de verdad. No se guarda en localStorage.
     }
 }
