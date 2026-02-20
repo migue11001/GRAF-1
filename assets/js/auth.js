@@ -1,3 +1,5 @@
+const BACKEND_URL = 'https://ejercicios-de-prueba-production.up.railway.app';
+
 class RegistrationForm {
     constructor() {
         this.formSection = document.getElementById('register-form-section');
@@ -94,9 +96,9 @@ class RegistrationForm {
         }
     }
 
-    handleRegisterSubmit(e) {
+    async handleRegisterSubmit(e) {
         e.preventDefault();
-        
+
         const formData = new FormData(this.registerForm);
         const username = formData.get('username');
         const email = formData.get('email');
@@ -112,26 +114,38 @@ class RegistrationForm {
             return;
         }
 
-        const users = JSON.parse(localStorage.getItem('grafiter_users') || '[]');
-        if (users.some(user => user.email === email)) {
-            alert('Este correo electrónico ya está registrado.');
-            return;
+        const submitBtn = this.registerForm.querySelector('.submit-btn');
+        submitBtn.textContent = 'Registrando...';
+        submitBtn.disabled = true;
+
+        try {
+            const response = await fetch(`${BACKEND_URL}/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, password })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.detail || 'Error al registrar. Intenta de nuevo.');
+                return;
+            }
+
+            alert(`¡Usuario ${username} registrado con éxito! Ahora puedes iniciar sesión.`);
+            this.hideForm();
+        } catch (error) {
+            alert('No se pudo conectar con el servidor. Verifica tu conexión.');
+            console.error('Error en registro:', error);
+        } finally {
+            submitBtn.textContent = 'Register';
+            submitBtn.disabled = false;
         }
-
-        // NOTA: Esto no es seguro para producción. Es un placeholder para la Fase 2.
-        // En un backend real, usaríamos un algoritmo de hashing como bcrypt.
-        const hashedPassword = btoa(password);
-
-        users.push({ username, email, password: hashedPassword });
-        localStorage.setItem('grafiter_users', JSON.stringify(users));
-
-        alert(`¡Usuario ${username} registrado con éxito! Ahora puedes iniciar sesión.`);
-        this.hideForm();
     }
 
-    handleLoginSubmit(e) {
+    async handleLoginSubmit(e) {
         e.preventDefault();
-        
+
         const formData = new FormData(this.loginForm);
         const email = formData.get('login-email');
         const password = formData.get('login-password');
@@ -141,29 +155,39 @@ class RegistrationForm {
             return;
         }
 
-        const users = JSON.parse(localStorage.getItem('grafiter_users') || '[]');
-        const user = users.find(u => u.email === email);
-
-        // Comparamos la contraseña "hasheada"
-        if (!user || user.password !== btoa(password)) {
-            alert('Credenciales incorrectas.');
-            return;
-        }
-        
         const submitBtn = this.loginForm.querySelector('.submit-btn');
         submitBtn.textContent = 'Iniciando sesión...';
         submitBtn.disabled = true;
-        
-        // Guardar sesión
-        const session = {
-            email: user.email,
-            username: user.username,
-            loggedInAt: new Date().toISOString()
-        };
-        localStorage.setItem('grafiter_session', JSON.stringify(session));
 
-        setTimeout(() => {
+        try {
+            const response = await fetch(`${BACKEND_URL}/token`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.detail || 'Credenciales incorrectas.');
+                return;
+            }
+
+            // Guardar token y sesión
+            localStorage.setItem('grafiter_token', data.access_token);
+            const session = {
+                email,
+                loggedInAt: new Date().toISOString()
+            };
+            localStorage.setItem('grafiter_session', JSON.stringify(session));
+
             window.location.href = '/USUARIOS/voicebox.html';
-        }, 1000);
+        } catch (error) {
+            alert('No se pudo conectar con el servidor. Verifica tu conexión.');
+            console.error('Error en login:', error);
+        } finally {
+            submitBtn.textContent = 'Log In';
+            submitBtn.disabled = false;
+        }
     }
 }
