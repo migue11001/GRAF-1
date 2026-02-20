@@ -45,18 +45,18 @@ class VoiceWallApp {
     getFilteredNotesByPeriod(period) {
         const now = new Date();
         const HOUR_24 = 24 * 60 * 60 * 1000;
-        const DAYS_7 = 7 * 24 * 60 * 60 * 1000;
-        const DAYS_28 = 28 * 24 * 60 * 60 * 1000;
+        const DAYS_7  = 7  * 24 * 60 * 60 * 1000;
+        const DAYS_30 = 30 * 24 * 60 * 60 * 1000;
 
         const filtered = this.notes.filter(note => {
             if (note.cancelled) return false;
             const age = now - new Date(note.timestamp);
-            if (age > DAYS_28) return false;
+            if (age > DAYS_30) return false;
 
             switch(period) {
                 case 'dia':    return age <= HOUR_24;
                 case 'semana': return age > HOUR_24 && age <= DAYS_7;
-                case 'mes':    return age > DAYS_7 && age <= DAYS_28;
+                case 'mes':    return age > DAYS_7  && age <= DAYS_30;
                 default:       return false;
             }
         });
@@ -93,12 +93,12 @@ class VoiceWallApp {
 
     cleanExpiredNotes() {
         const now = new Date();
-        const DAYS_28 = 28 * 24 * 60 * 60 * 1000;
+        const DAYS_30 = 30 * 24 * 60 * 60 * 1000;
         const originalLength = this.notes.length;
 
         this.notes = this.notes.filter(note => {
             const age = now - new Date(note.timestamp);
-            const isExpired = age > DAYS_28;
+            const isExpired = age > DAYS_30;
             const isCancelled = note.cancelled;
 
             if (isExpired || isCancelled) {
@@ -113,12 +113,6 @@ class VoiceWallApp {
         if (this.notes.length !== originalLength) {
             this.saveNotes();
         }
-    }
-
-    calculateExpirationDate(publishPeriod, timestamp) {
-        const expirationDate = new Date(timestamp);
-        expirationDate.setDate(expirationDate.getDate() + 28);
-        return expirationDate;
     }
 
     generateSlotNumber(period, position) {
@@ -457,17 +451,8 @@ class VoiceWallApp {
     }
 
     async loadNotes() {
-        const token = localStorage.getItem('grafiter_token');
-        if (!token) {
-            this.notes = [];
-            this.renderNotes();
-            return;
-        }
-
         try {
-            const response = await fetch(`${BACKEND_URL}/publications/${this.config.lang}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            const response = await fetch(`${BACKEND_URL}/publications/${this.config.lang}`);
 
             if (!response.ok) {
                 this.notes = [];
@@ -481,13 +466,11 @@ class VoiceWallApp {
                 timestamp: new Date(meta.created_at),
                 expirationDate: new Date(meta.expires_at),
                 userID: meta.user_id,
-                publishPeriod: meta.publish_period,
                 pubCode: meta.pub_code,
                 coverImage: meta.cover_image,
                 audioUrl: null,
                 cancelled: false,
             }));
-            console.log(`Publicaciones de ${this.config.lang} cargadas:`, this.notes.length);
         } catch (error) {
             console.error('Error cargando publicaciones:', error);
             this.notes = [];

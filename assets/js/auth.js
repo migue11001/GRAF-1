@@ -173,8 +173,15 @@ class RegistrationForm {
                 return;
             }
 
-            // Guardar token y sesión
-            localStorage.setItem('grafiter_token', data.access_token);
+            // Validar que el token tiene estructura JWT válida (3 segmentos separados por puntos)
+            const token = data.access_token;
+            if (!token || token.split('.').length !== 3) {
+                alert('Error al iniciar sesión: respuesta del servidor inválida. Contacta al administrador.');
+                console.error('Token inválido recibido:', data);
+                return;
+            }
+
+            localStorage.setItem('grafiter_token', token);
             const session = {
                 email,
                 loggedInAt: new Date().toISOString()

@@ -315,15 +315,6 @@
             </div>
 
             <div class="publish-form-group">
-                <label>Duración Total</label>
-                <div class="period-options">
-                    <button data-period="day" class="active">1 Día</button>
-                    <button data-period="week">7 Días</button>
-                    <button data-period="month">30 Días</button>
-                </div>
-            </div>
-
-            <div class="publish-form-group">
                 <label>Imagen de Portada (opcional)</label>
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                     <label for="publish-cover-image" style="padding: 0.5rem 1rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 0.5rem; color: white; font-size: 0.85rem; cursor: pointer;">Subir imagen</label>
@@ -546,7 +537,6 @@
                 this.publishConfirmBtn = document.getElementById('publish-confirm-btn');
                 this.publishCancelBtn = document.getElementById('publish-cancel-btn');
                 this.publishTitleInput = document.getElementById('publish-title');
-                this.periodOptions = document.querySelector('.period-options');
                 this.langOptions = document.querySelector('.lang-options');
                 this.publishCoverInput = document.getElementById('publish-cover-image');
                 this.publishCoverName = document.getElementById('publish-cover-name');
@@ -612,7 +602,6 @@
                 this.publishCancelBtn.addEventListener('click', () => this.closePublishModal());
                 this.publishConfirmBtn.addEventListener('click', () => this.handlePublish());
 
-                this.periodOptions.addEventListener('click', (e) => this.handleOptionButtons(e, this.periodOptions));
                 this.langOptions.addEventListener('click', (e) => this.handleOptionButtons(e, this.langOptions));
                 this.publishCoverInput.addEventListener('change', (e) => this.handleCoverImage(e));
 
@@ -686,10 +675,16 @@
                 if (this.pubsModal) this.pubsModal.style.display = 'none';
             }
 
+            expireSession() {
+                localStorage.removeItem('grafiter_token');
+                localStorage.removeItem('grafiter_session');
+                alert('Tu sesión expiró. Por favor inicia sesión de nuevo.');
+                window.location.href = '../index.html';
+            }
+
             async renderPubsList() {
-                const token = localStorage.getItem('grafiter_token');
                 const session = JSON.parse(localStorage.getItem('grafiter_session') || '{}');
-                if (!token || !session.email) {
+                if (!session.email) {
                     this.pubsEmpty.style.display = '';
                     return;
                 }
@@ -702,9 +697,8 @@
 
                     const responses = await Promise.all(
                         langs.map(lang =>
-                            fetch(`${BACKEND_URL}/publications/${lang}`, {
-                                headers: { 'Authorization': `Bearer ${token}` }
-                            }).then(r => r.ok ? r.json() : [])
+                            fetch(`${BACKEND_URL}/publications/${lang}`)
+                                .then(r => r.ok ? r.json() : [])
                         )
                     );
 
@@ -776,14 +770,12 @@
                     return;
                 }
 
-                const selectedPeriod = this.periodOptions.querySelector('.active').dataset.period;
                 const selectedLang = this.langOptions.querySelector('.active').dataset.lang;
 
                 const payload = {
                     title,
                     content,
                     language: selectedLang,
-                    publish_period: selectedPeriod,
                     cover_image: this.coverImageData || null,
                     style: {
                         bgMode: this.bgMode,
@@ -811,10 +803,17 @@
                         body: JSON.stringify(payload)
                     });
 
-                    const data = await response.json();
+                    if (response.status === 401) {
+                        this.expireSession();
+                        return;
+                    }
+
+                    const text = await response.text();
+                    let data = {};
+                    try { data = JSON.parse(text); } catch (_) {}
 
                     if (!response.ok) {
-                        alert(data.detail || 'Error al publicar. Intenta de nuevo.');
+                        alert(data.error || data.detail || `Error ${response.status}: ${text}`);
                         return;
                     }
 
