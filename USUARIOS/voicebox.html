@@ -761,12 +761,6 @@
                 }
             }
 
-            calculateExpirationDate(publishPeriod, timestamp) {
-                const expirationDate = new Date(timestamp);
-                expirationDate.setDate(expirationDate.getDate() + 28);
-                return expirationDate;
-            }
-
             async handlePublish() {
                 const title = this.publishTitleInput.value.trim();
                 const content = this.script.value.trim();
@@ -784,14 +778,12 @@
 
                 const selectedPeriod = this.periodOptions.querySelector('.active').dataset.period;
                 const selectedLang = this.langOptions.querySelector('.active').dataset.lang;
-                const pubCode = Math.random().toString(36).substr(2, 6).toUpperCase();
 
                 const payload = {
                     title,
                     content,
                     language: selectedLang,
                     publish_period: selectedPeriod,
-                    pub_code: pubCode,
                     cover_image: this.coverImageData || null,
                     style: {
                         bgMode: this.bgMode,
@@ -826,13 +818,13 @@
                         return;
                     }
 
-                    alert(`¡Publicado con éxito en el salón ${selectedLang.toUpperCase()}!\n\nCódigo de publicación: ${pubCode}`);
+                    alert(`¡Publicado con éxito en el salón ${selectedLang.toUpperCase()}!\n\nCódigo de publicación: ${data.pub_code}`);
                     this.closePublishModal();
                 } catch (error) {
                     alert('No se pudo conectar con el servidor.');
                     console.error('Error al publicar:', error);
                 } finally {
-                    confirmBtn.textContent = 'Publicar';
+                    confirmBtn.textContent = 'Confirmar y Publicar';
                     confirmBtn.disabled = false;
                 }
             }
