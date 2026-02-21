@@ -403,7 +403,7 @@
 
             <div id="teleprompter-controls">
                 <nav>
-                    <button id="exit-btn" onclick="window.location.href='/'">Salir</button>
+                    <button id="exit-btn">Salir</button>
                     <button id="publish-btn">Publicar</button>
                     <button id="pubs-btn">Publicaciones</button>
                     <button id="background-btn">Background</button>
@@ -611,6 +611,13 @@
             }
 
             init() {
+                // Exit — cierra sesión y sale
+                document.getElementById('exit-btn').addEventListener('click', () => {
+                    localStorage.removeItem('grafiter_token');
+                    localStorage.removeItem('grafiter_session');
+                    window.location.replace('/');
+                });
+
                 // Teleprompter controls
                 this.script.addEventListener('input', () => this.updateText());
                 this.playBtn.addEventListener('click', () => this.play());

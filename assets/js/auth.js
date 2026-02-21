@@ -64,20 +64,6 @@ class RegistrationForm {
         this.sidebarLoginBtn.addEventListener('click', () => {
             window.location.href = '/USUARIOS/voicebox.html';
         }, { once: true });
-
-        // Agregar botón de cerrar sesión
-        const logoutBtn = document.createElement('button');
-        logoutBtn.textContent = 'Cerrar sesión';
-        logoutBtn.className = 'sidebar-logo';
-        logoutBtn.style.fontSize = '0.75rem';
-        logoutBtn.style.color = 'rgba(255,100,100,0.8)';
-        logoutBtn.style.textShadow = '0 0 8px rgba(255,80,80,0.4)';
-        logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('grafiter_token');
-            localStorage.removeItem('grafiter_session');
-            window.location.reload();
-        });
-        this.sidebarRegisterBtn.parentElement.appendChild(logoutBtn);
     }
 
     toggleForm() {
