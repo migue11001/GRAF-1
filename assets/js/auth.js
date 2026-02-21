@@ -17,6 +17,8 @@ class RegistrationForm {
     }
 
     init() {
+        this.checkExistingSession();
+
         this.grafiterBtn.addEventListener('click', () => this.toggleForm());
         this.sidebarRegisterBtn.addEventListener('click', () => this.toggleRegisterForm());
         if (this.sidebarLoginBtn) {
@@ -25,15 +27,57 @@ class RegistrationForm {
         this.cancelBtns.forEach(btn => {
             btn.addEventListener('click', () => this.hideForm());
         });
-        
+
         this.registerForm.addEventListener('submit', (e) => this.handleRegisterSubmit(e));
         this.loginForm.addEventListener('submit', (e) => this.handleLoginSubmit(e));
-        
+
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.isFormVisible) {
                 this.hideForm();
             }
         });
+    }
+
+    checkExistingSession() {
+        const token = localStorage.getItem('grafiter_token');
+        const session = JSON.parse(localStorage.getItem('grafiter_session') || '{}');
+        if (!token || !session.email) return;
+
+        // Verificar que el token no ha expirado
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            if (payload.exp && payload.exp * 1000 < Date.now()) {
+                localStorage.removeItem('grafiter_token');
+                localStorage.removeItem('grafiter_session');
+                return;
+            }
+        } catch (_) {
+            return;
+        }
+
+        // Sesión activa: reemplazar botones del sidebar por acceso directo
+        this.sidebarRegisterBtn.textContent = session.email;
+        this.sidebarRegisterBtn.style.fontSize = '0.75rem';
+        this.sidebarRegisterBtn.style.letterSpacing = '0';
+
+        this.sidebarLoginBtn.textContent = 'Ir al VoiceBox →';
+        this.sidebarLoginBtn.addEventListener('click', () => {
+            window.location.href = '/USUARIOS/voicebox.html';
+        }, { once: true });
+
+        // Agregar botón de cerrar sesión
+        const logoutBtn = document.createElement('button');
+        logoutBtn.textContent = 'Cerrar sesión';
+        logoutBtn.className = 'sidebar-logo';
+        logoutBtn.style.fontSize = '0.75rem';
+        logoutBtn.style.color = 'rgba(255,100,100,0.8)';
+        logoutBtn.style.textShadow = '0 0 8px rgba(255,80,80,0.4)';
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('grafiter_token');
+            localStorage.removeItem('grafiter_session');
+            window.location.reload();
+        });
+        this.sidebarRegisterBtn.parentElement.appendChild(logoutBtn);
     }
 
     toggleForm() {

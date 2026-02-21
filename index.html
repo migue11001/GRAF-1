@@ -19,21 +19,31 @@
         }
 
         .language-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            margin-top: 0.5rem;
-            background: rgba(10, 10, 15, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 0.75rem;
-            padding: 0.5rem;
+            position: fixed;
+            top: 5.4rem;
+            right: 2rem;
+            background: none;
+            border: none;
+            padding: 0;
             display: none;
             flex-direction: column;
-            gap: 0.25rem;
-            min-width: 120px;
+            gap: 0.1rem;
+            min-width: 110px;
             z-index: 200;
+        }
+
+        @media (max-width: 768px) {
+            .language-dropdown {
+                top: 4.2rem;
+                right: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .language-dropdown {
+                top: 3.4rem;
+                right: 0.6rem;
+            }
         }
 
         .language-dropdown.show {
@@ -43,18 +53,28 @@
         .language-option {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
+            gap: 0.4rem;
+            padding: 0.3rem 0.5rem;
             cursor: pointer;
             transition: all 0.2s ease;
-            font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.8);
+            font-family: 'Raleway', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 300;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.88);
+            text-shadow:
+                0 0 6px rgba(255, 255, 255, 0.55),
+                0 0 14px rgba(255, 255, 255, 0.2);
         }
 
         .language-option:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
+            background-image: linear-gradient(to right, #FFA500, #FFD700, #FFFF00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: none;
+            transform: translateX(2px);
         }
 
         .main-content {
@@ -924,9 +944,9 @@
             <div class="salones-selector">
                 <button class="header-button" id="btn-salones">Salones</button>
                 <div class="language-dropdown" id="salones-dropdown">
-                    <div class="language-option" data-url="SALONES/es.html">🇪🇸 Español</div>
-                    <div class="language-option" data-url="SALONES/us.html">🇺🇸 English</div>
-                    <div class="language-option" data-url="SALONES/it.html">🇮🇹 Italiano</div>
+                    <div class="language-option" data-url="SALONES/es.html">Español</div>
+                    <div class="language-option" data-url="SALONES/us.html">English</div>
+                    <div class="language-option" data-url="SALONES/it.html">Italiano</div>
                 </div>
             </div>
         </div>
