@@ -436,17 +436,24 @@ class VoiceWallApp {
             }
 
             const data = await response.json();
-            this.notes = data.map(meta => ({
-                ...meta,
-                timestamp: new Date(meta.created_at),
-                expirationDate: new Date(meta.expires_at),
-                userID: meta.user_id,
-                pubCode: meta.pub_code,
-                coverImage: meta.cover_image,
-                currentPeriod: meta.current_period,
-                audioUrl: null,
-                cancelled: false,
-            }));
+            this.notes = data.map(meta => {
+                const age = Date.now() - new Date(meta.created_at).getTime();
+                const HOUR_24 = 24 * 60 * 60 * 1000;
+                const DAYS_7  = 7  * 24 * 60 * 60 * 1000;
+                const currentPeriod = meta.current_period ||
+                    (age <= HOUR_24 ? 'day' : age <= DAYS_7 ? 'week' : 'month');
+                return {
+                    ...meta,
+                    timestamp: new Date(meta.created_at),
+                    expirationDate: new Date(meta.expires_at),
+                    userID: meta.user_id,
+                    pubCode: meta.pub_code,
+                    coverImage: meta.cover_image,
+                    currentPeriod,
+                    audioUrl: null,
+                    cancelled: false,
+                };
+            });
         } catch (error) {
             console.error('Error cargando publicaciones:', error);
             this.notes = [];
