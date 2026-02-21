@@ -24,10 +24,16 @@
         
         <!-- Language selector -->
         <div class="language-selector">
-            <a href="es.html" class="language-flag active">🇪🇸</a>
-            <a href="us.html" class="language-flag">🇺🇸</a>
-            <a href="it.html" class="language-flag">🇮🇹</a>
-            <button class="language-more" id="language-more">+</button>
+            <div class="language-more-wrapper">
+                <button class="language-more" id="language-more">+</button>
+                <div class="language-dropdown" id="language-dropdown">
+                    <a href="es.html" class="language-option active">🇪🇸</a>
+                    <div class="lang-divider"></div>
+                    <a href="us.html" class="language-option">🇺🇸</a>
+                    <div class="lang-divider"></div>
+                    <a href="it.html" class="language-option">🇮🇹</a>
+                </div>
+            </div>
         </div>
         
         <div class="header-buttons">
@@ -49,7 +55,7 @@
 
         <!-- Week Section -->
         <section class="period-section">
-            <h2 class="period-title">ESTA SEMANA</h2>
+            <h2 class="period-title">SEMANA</h2>
             <div id="voice-wall-semana" class="voice-posts">
                 <!-- Las publicaciones de la semana aparecerán aquí -->
             </div>
@@ -57,7 +63,7 @@
 
         <!-- Month Section -->
         <section class="period-section">
-            <h2 class="period-title">ESTE MES</h2>
+            <h2 class="period-title">MES</h2>
             <div id="voice-wall-mes" class="voice-posts">
                 <!-- Las publicaciones del mes aparecerán aquí -->
             </div>
@@ -72,6 +78,20 @@
     <script src="../assets/js/salon-base.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Dropdown salones
+            const moreBtn = document.getElementById('language-more');
+            const dropdown = document.getElementById('language-dropdown');
+            moreBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+                moreBtn.style.transform = dropdown.classList.contains('show')
+                    ? 'rotate(45deg)' : '';
+            });
+            document.addEventListener('click', () => {
+                dropdown.classList.remove('show');
+                moreBtn.style.transform = '';
+            });
+
             new VoiceWallApp({
                 lang: 'es',
                 storageKey: 'voiceNotes_es',

@@ -55,6 +55,41 @@
             height: 24px;
         }
 
+        /* Alignment buttons */
+        .align-btns {
+            display: flex;
+            gap: 4px;
+        }
+        #teleprompter-controls nav button.align-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: white;
+            width: 36px;
+            height: 32px;
+            min-height: unset;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s, border-color 0.2s;
+            padding: 0;
+            margin: 0;
+        }
+        #teleprompter-controls nav button.align-btn svg {
+            fill: white;
+            width: 18px;
+            height: 18px;
+        }
+        #teleprompter-controls nav button.align-btn:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        #teleprompter-controls nav button.align-btn.active {
+            background-color: rgba(255, 255, 255, 0.55);
+            border-color: rgba(255, 255, 255, 0.9);
+        }
+
         /* Publish Modal Styles */
         .publish-modal {
             position: fixed;
@@ -456,8 +491,21 @@
                             <div class="disable-select">Text size: <span id="teleprompter-text-size-display">58</span>px</div>
                         </div>
                         <div>
-                            <input id="teleprompter-margin" type="range" min="0" max="40" value="5" step="1">
-                            <div class="disable-select">Margin: <span id="teleprompter-margin-display">5</span>%</div>
+                            <div class="align-btns" id="align-btns">
+                                <button class="align-btn active" data-align="left" title="Izquierda">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 5h18v2H3V5zm0 4h12v2H3V9zm0 4h18v2H3v-2zm0 4h12v2H3v-2z"/></svg>
+                                </button>
+                                <button class="align-btn" data-align="center" title="Centrar">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 5h18v2H3V5zm3 4h12v2H6V9zm-3 4h18v2H3v-2zm3 4h12v2H6v-2z"/></svg>
+                                </button>
+                                <button class="align-btn" data-align="right" title="Derecha">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 5h18v2H3V5zm6 4h12v2H9V9zm-6 4h18v2H3v-2zm6 4h12v2H9v-2z"/></svg>
+                                </button>
+                                <button class="align-btn" data-align="justify" title="Justificar">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 5h18v2H3V5zm0 4h18v2H3V9zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/></svg>
+                                </button>
+                            </div>
+                            <div class="disable-select">Alineación</div>
                         </div>
                         <div>
                             <input id="teleprompter-speed" type="range" min="1" max="50" value="10" step="1">
@@ -503,8 +551,8 @@
                 this.textColorPicker = document.getElementById('teleprompter-text-color');
                 this.textSizeSlider = document.getElementById('teleprompter-text-size');
                 this.textSizeDisplay = document.getElementById('teleprompter-text-size-display');
-                this.marginSlider = document.getElementById('teleprompter-margin');
-                this.marginDisplay = document.getElementById('teleprompter-margin-display');
+                this.alignBtns = document.querySelectorAll('.align-btn');
+                this.currentAlign = 'left';
                 this.speedSlider = document.getElementById('teleprompter-speed');
                 this.speedDisplay = document.getElementById('teleprompter-speed-display');
 
@@ -552,6 +600,7 @@
                 this.isPlaying = false;
                 this.isDrawerExpanded = false;
                 this.audioReady = false;
+                this.scrollAccumulator = 0;
 
                 // Background state
                 this.bgMode = 'color';
@@ -573,7 +622,7 @@
                 this.bgColorPicker.addEventListener('input', () => this.applyBackground());
                 this.textColorPicker.addEventListener('input', (e) => this.textContent.style.color = e.target.value);
                 this.textSizeSlider.addEventListener('input', (e) => this.updateTextSize(e.target.value));
-                this.marginSlider.addEventListener('input', (e) => this.updateMargin(e.target.value));
+                this.alignBtns.forEach(btn => btn.addEventListener('click', () => this.updateAlignment(btn.dataset.align)));
                 this.speedSlider.addEventListener('input', (e) => this.updateSpeed(e.target.value));
 
                 // Background tabs
@@ -612,7 +661,7 @@
                 // Initial state
                 this.updateText();
                 this.updateTextSize(this.textSizeSlider.value);
-                this.updateMargin(this.marginSlider.value);
+                this.updateAlignment('left');
                 this.updateSpeed(this.speedSlider.value);
             }
 
@@ -647,10 +696,27 @@
             handleCoverImage(e) {
                 const file = e.target.files[0];
                 if (!file) return;
+
                 const reader = new FileReader();
                 reader.onload = (ev) => {
-                    this.coverImageData = ev.target.result;
-                    this.publishCoverName.textContent = file.name;
+                    const img = new Image();
+                    img.onload = () => {
+                        // Recorte cuadrado 1:1 centrado
+                        const size = Math.min(img.width, img.height);
+                        const offsetX = (img.width - size) / 2;
+                        const offsetY = (img.height - size) / 2;
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 400;
+                        canvas.height = 400;
+                        const ctx = canvas.getContext('2d');
+
+                        ctx.drawImage(img, offsetX, offsetY, size, size, 0, 0, 400, 400);
+
+                        this.coverImageData = canvas.toDataURL('image/jpeg', 0.88);
+                        this.publishCoverName.textContent = file.name;
+                    };
+                    img.src = ev.target.result;
                 };
                 reader.readAsDataURL(file);
             }
@@ -784,7 +850,7 @@
                         bgImageData: this.bgMode === 'image' ? this.bgImageData : null,
                         textColor: this.textColorPicker.value,
                         fontSize: this.textSizeSlider.value,
-                        margin: this.marginSlider.value,
+                        textAlign: this.currentAlign,
                         speed: this.speedSlider.value,
                     },
                 };
@@ -829,7 +895,10 @@
             }
 
             updateText() {
-                this.textContent.innerHTML = this.script.value.replace(/\n/g, '<br>');
+                const lines = this.script.value.split('\n');
+                this.textContent.innerHTML = lines
+                    .map(line => `<p>${line || '<br>'}</p>`)
+                    .join('');
             }
 
             play() {
@@ -886,7 +955,12 @@
                     const delta = timestamp - this.lastFrameTime;
                     this.lastFrameTime = timestamp;
                     const pxPerSec = parseInt(this.speedSlider.value) * 3;
-                    this.display.scrollTop += pxPerSec * (delta / 1000);
+                    this.scrollAccumulator += pxPerSec * (delta / 1000);
+                    const intPx = Math.floor(this.scrollAccumulator);
+                    if (intPx > 0) {
+                        this.display.scrollTop += intPx;
+                        this.scrollAccumulator -= intPx;
+                    }
                     if (this.display.scrollTop >= maxScroll) { this.stop(); return; }
                 }
                 this.animFrame = requestAnimationFrame((t) => this.scrollStep(t));
@@ -904,6 +978,7 @@
             stop() {
                 this.isPlaying = false;
                 this.isPreRolling = false;
+                this.scrollAccumulator = 0;
                 cancelAnimationFrame(this.animFrame);
                 this.display.scrollTop = 0;
                 document.getElementById('scroll-spacer').style.height = '1rem';
@@ -932,9 +1007,11 @@
                 this.textSizeDisplay.textContent = size;
             }
 
-            updateMargin(margin) {
-                this.display.style.padding = `0 ${margin}%`;
-                this.marginDisplay.textContent = margin;
+            updateAlignment(align) {
+                this.currentAlign = align;
+                this.textContent.style.textAlign = align;
+                this.textContent.style.textAlignLast = align === 'justify' ? 'justify' : '';
+                this.alignBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.align === align));
             }
 
             updateSpeed(speed) {

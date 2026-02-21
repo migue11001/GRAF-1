@@ -58,8 +58,13 @@
     font-size: 2rem;
     font-weight: bold;
     margin-bottom: 1.5rem;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.92);
     text-align: center;
+    letter-spacing: 0.18em;
+    text-shadow:
+        0 0 6px rgba(255, 255, 255, 0.55),
+        0 0 16px rgba(200, 230, 255, 0.3),
+        0 0 32px rgba(180, 210, 255, 0.15);
 }
 
 .voice-posts {
