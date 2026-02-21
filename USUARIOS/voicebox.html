@@ -368,7 +368,7 @@
 
             <div id="teleprompter-controls">
                 <nav>
-                    <button id="exit-btn" onclick="window.location.href='../index.html'">Salir</button>
+                    <button id="exit-btn" onclick="window.location.href='/'">Salir</button>
                     <button id="publish-btn">Publicar</button>
                     <button id="pubs-btn">Publicaciones</button>
                     <button id="background-btn">Background</button>
@@ -679,7 +679,7 @@
                 localStorage.removeItem('grafiter_token');
                 localStorage.removeItem('grafiter_session');
                 alert('Tu sesión expiró. Por favor inicia sesión de nuevo.');
-                window.location.href = '../index.html';
+                window.location.href = '/';
             }
 
             async renderPubsList() {
