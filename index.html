@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GRAFITER-teleprompter</title>
     <meta name="description" content="Utiliza nuestro teleprompter con video para practicar y perfeccionar tus discursos. Graba y comparte tus mensajes de voz en nuestro mural interactivo.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/common.css">
     <link rel="stylesheet" href="assets/css/sponsors.css">
     <style>
@@ -183,6 +186,106 @@
             }
         }
 
+        .video-redes-section {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 1080px;
+            margin: 13.5rem auto 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        .video-full {
+            width: 100%;
+        }
+
+        .video-text-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .video-small {
+            width: 100%;
+        }
+
+        .redes-col {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .redes-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #fff5a0;
+            text-shadow: 0 0 8px rgba(255, 240, 100, 0.5), 0 0 18px rgba(255, 220, 50, 0.25);
+        }
+
+        .redes-desc {
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.9;
+            text-shadow:
+                0 0 6px rgba(255, 255, 255, 0.55),
+                0 0 14px rgba(255, 255, 255, 0.2);
+        }
+
+        .redes-icons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+
+        .red-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.6rem 0.4rem;
+            border-radius: 0.6rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .red-item:hover {
+            background: rgba(255, 215, 0, 0.08);
+            border-color: rgba(255, 215, 0, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .red-icon {
+            font-size: 1.2rem;
+            color: #FFD700;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+        }
+
+        .red-label {
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 0.04em;
+        }
+
+        .redes-sub {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-style: italic;
+            line-height: 1.6;
+            text-shadow:
+                0 0 6px rgba(255, 255, 255, 0.55),
+                0 0 14px rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .video-redes-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .teleprompter-section {
             position: relative;
             z-index: 10;
@@ -205,14 +308,68 @@
         .teleprompter-input {
             width: 90%;
             max-width: 1080px;
-            margin: 0 auto 1rem;
+            margin: 12rem auto 3rem;
+        }
+
+        @keyframes neon-border-flow {
+            0%   {
+                border-color: rgba(160, 210, 255, 0.5);
+                box-shadow: 0 0 8px rgba(160, 210, 255, 0.35), 0 0 22px rgba(160, 210, 255, 0.12), inset 0 0 10px rgba(160, 210, 255, 0.04);
+            }
+            20%  {
+                border-color: rgba(190, 155, 255, 0.55);
+                box-shadow: 0 0 12px rgba(190, 155, 255, 0.4), 0 0 30px rgba(190, 155, 255, 0.14), inset 0 0 12px rgba(190, 155, 255, 0.05);
+            }
+            40%  {
+                border-color: rgba(130, 240, 200, 0.5);
+                box-shadow: 0 0 9px rgba(130, 240, 200, 0.35), 0 0 24px rgba(130, 240, 200, 0.12), inset 0 0 10px rgba(130, 240, 200, 0.04);
+            }
+            60%  {
+                border-color: rgba(255, 220, 140, 0.5);
+                box-shadow: 0 0 13px rgba(255, 220, 140, 0.38), 0 0 28px rgba(255, 220, 140, 0.13), inset 0 0 12px rgba(255, 220, 140, 0.05);
+            }
+            80%  {
+                border-color: rgba(255, 155, 195, 0.5);
+                box-shadow: 0 0 10px rgba(255, 155, 195, 0.35), 0 0 25px rgba(255, 155, 195, 0.12), inset 0 0 10px rgba(255, 155, 195, 0.04);
+            }
+            100% {
+                border-color: rgba(160, 210, 255, 0.5);
+                box-shadow: 0 0 8px rgba(160, 210, 255, 0.35), 0 0 22px rgba(160, 210, 255, 0.12), inset 0 0 10px rgba(160, 210, 255, 0.04);
+            }
+        }
+
+        @keyframes neon-border-focus {
+            0%   {
+                border-color: rgba(160, 210, 255, 0.8);
+                box-shadow: 0 0 14px rgba(160, 210, 255, 0.55), 0 0 36px rgba(160, 210, 255, 0.2), inset 0 0 14px rgba(160, 210, 255, 0.07);
+            }
+            20%  {
+                border-color: rgba(190, 155, 255, 0.85);
+                box-shadow: 0 0 18px rgba(190, 155, 255, 0.6), 0 0 42px rgba(190, 155, 255, 0.22), inset 0 0 16px rgba(190, 155, 255, 0.08);
+            }
+            40%  {
+                border-color: rgba(130, 240, 200, 0.8);
+                box-shadow: 0 0 15px rgba(130, 240, 200, 0.55), 0 0 38px rgba(130, 240, 200, 0.2), inset 0 0 14px rgba(130, 240, 200, 0.07);
+            }
+            60%  {
+                border-color: rgba(255, 220, 140, 0.8);
+                box-shadow: 0 0 18px rgba(255, 220, 140, 0.58), 0 0 40px rgba(255, 220, 140, 0.22), inset 0 0 16px rgba(255, 220, 140, 0.08);
+            }
+            80%  {
+                border-color: rgba(255, 155, 195, 0.8);
+                box-shadow: 0 0 15px rgba(255, 155, 195, 0.55), 0 0 36px rgba(255, 155, 195, 0.2), inset 0 0 14px rgba(255, 155, 195, 0.07);
+            }
+            100% {
+                border-color: rgba(160, 210, 255, 0.8);
+                box-shadow: 0 0 14px rgba(160, 210, 255, 0.55), 0 0 36px rgba(160, 210, 255, 0.2), inset 0 0 14px rgba(160, 210, 255, 0.07);
+            }
         }
 
         .teleprompter-textarea {
             width: 100%;
             min-height: 120px;
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(180, 220, 255, 0.35);
             border-radius: 0.75rem;
             padding: 1rem;
             color: white;
@@ -221,12 +378,12 @@
             resize: vertical;
             font-family: inherit;
             text-align: center;
-            transition: border-color 0.3s ease;
+            animation: neon-border-flow 7s ease-in-out infinite;
         }
 
         .teleprompter-textarea:focus {
             outline: none;
-            border-color: rgba(255, 165, 0, 0.5);
+            animation: neon-border-focus 7s ease-in-out infinite;
         }
 
         .teleprompter-textarea::placeholder {
@@ -242,13 +399,14 @@
 
         .teleprompter-display {
             width: 100%;
-            height: 180px;
+            height: 270px;
             background: rgba(0, 0, 0, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(180, 220, 255, 0.35);
             border-radius: 0.75rem;
             overflow: hidden;
             position: relative;
             margin-bottom: 0.75rem;
+            animation: neon-border-flow 7s ease-in-out infinite;
         }
 
         .teleprompter-scroll {
@@ -268,6 +426,61 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+        }
+
+        .tp-description-block {
+            width: 90%;
+            max-width: 1080px;
+            margin: 8rem auto 6rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.28rem;
+            align-items: center;
+        }
+
+        .tp-text-col {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            text-align: left;
+        }
+
+        .tp-image-col {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tp-image-col img {
+            width: 100%;
+            height: auto;
+            border-radius: 0.75rem;
+            object-fit: contain;
+        }
+
+        .tp-description-text {
+            font-size: 1.43rem;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.8;
+            text-shadow:
+                0 0 6px rgba(255, 255, 255, 0.55),
+                0 0 14px rgba(255, 255, 255, 0.2);
+        }
+
+        .tp-cta-text {
+            font-size: 1.43rem;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.7;
+            text-shadow:
+                0 0 6px rgba(255, 255, 255, 0.55),
+                0 0 14px rgba(255, 255, 255, 0.2);
+        }
+
+        .tp-cta-highlight {
+            color: #FFD700;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.45), 0 0 18px rgba(255, 165, 0, 0.2);
+            font-weight: 600;
+            cursor: pointer;
         }
 
         .tp-btn {
@@ -314,12 +527,17 @@
         }
 
         .inbox-title {
-            font-size: 1.4rem;
+            font-size: 3.78rem;
             font-weight: 700;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 1.5rem;
+            color: rgba(255, 255, 255, 0.92);
             letter-spacing: 0.05em;
-            text-align: center;
+            white-space: nowrap;
+            width: fit-content;
+            margin: 0 auto 1.5rem;
+            text-shadow:
+                0 0 8px rgba(255, 255, 255, 0.6),
+                0 0 20px rgba(200, 230, 255, 0.35),
+                0 0 45px rgba(180, 210, 255, 0.2);
         }
 
         .inbox-grid {
@@ -329,48 +547,225 @@
         }
 
         .inbox-card {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(160deg,
+                rgba(18, 14, 4, 0.95) 0%,
+                rgba(38, 30, 8, 0.9) 50%,
+                rgba(18, 14, 4, 0.95) 100%
+            );
+            border: 1px solid rgba(212, 175, 55, 0.45);
             border-radius: 1rem;
             padding: 1.5rem;
             backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        /* Capa holofoil arcoíris */
+        .inbox-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(
+                var(--holo-angle, 135deg),
+                transparent 0%,
+                rgba(255, 50, 80, 0.18) 12%,
+                rgba(255, 165, 0, 0.22) 24%,
+                rgba(255, 215, 0, 0.25) 36%,
+                rgba(80, 220, 100, 0.18) 48%,
+                rgba(0, 180, 255, 0.18) 60%,
+                rgba(120, 60, 255, 0.18) 72%,
+                rgba(255, 0, 180, 0.18) 84%,
+                transparent 100%
+            );
+            opacity: 0;
+            mix-blend-mode: color-dodge;
+            transition: opacity 0.35s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Capa de destellos tipo holofoil */
+        .inbox-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background-image:
+                radial-gradient(circle, rgba(255, 215, 0, 0.9) 1px, transparent 1px),
+                radial-gradient(circle, rgba(255, 180, 50, 0.6) 1px, transparent 1px),
+                radial-gradient(circle, rgba(255, 255, 255, 0.7) 1px, transparent 1px);
+            background-size: 28px 28px, 44px 44px, 18px 18px;
+            background-position:
+                calc(var(--mx, 0.5) * 14px) calc(var(--my, 0.5) * 14px),
+                calc(var(--mx, 0.5) * 22px + 10px) calc(var(--my, 0.5) * 22px + 10px),
+                calc(var(--mx, 0.5) * 9px + 5px) calc(var(--my, 0.5) * 9px + 5px);
+            opacity: 0;
+            mix-blend-mode: screen;
+            transition: opacity 0.35s ease;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .inbox-card:hover::before,
+        .inbox-card:hover::after {
+            opacity: 1;
         }
 
         .inbox-card:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 165, 0, 0.3);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 215, 0, 0.75);
+            box-shadow:
+                0 0 18px rgba(255, 215, 0, 0.25),
+                0 0 50px rgba(255, 165, 0, 0.12),
+                0 14px 42px rgba(0, 0, 0, 0.55),
+                inset 0 0 20px rgba(212, 175, 55, 0.06);
         }
 
         .inbox-card-icon {
-            font-size: 2rem;
-            margin-bottom: 0.75rem;
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .inbox-card-icon img {
+            width: 3.5rem;
+            height: 3.5rem;
+            object-fit: contain;
+            opacity: 0.85;
+            transition: opacity 0.4s ease;
+        }
+
+        .inbox-card:hover .inbox-card-icon img {
+            opacity: 0;
+        }
+
+        .inbox-card-title,
+        .inbox-card-desc {
+            position: relative;
+            z-index: 2;
         }
 
         .inbox-card-title {
             font-size: 1rem;
             font-weight: 700;
-            color: #FFD700;
             margin-bottom: 0.5rem;
+            color: #fff5a0;
+            text-shadow:
+                0 0 6px rgba(255, 240, 100, 0.7),
+                0 0 14px rgba(255, 220, 50, 0.4);
         }
 
         .inbox-card-desc {
             font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.88);
             line-height: 1.6;
+            text-shadow:
+                0 0 6px rgba(255, 255, 255, 0.35),
+                0 0 12px rgba(255, 255, 255, 0.15);
         }
 
+        /* ── MOBILE ── */
         @media (max-width: 768px) {
+
+            /* Inbox cards */
             .inbox-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            /* Título sección */
+            .inbox-title {
+                font-size: 1.6rem;
+                white-space: normal;
+                text-align: center;
+            }
+
+            /* Bloque texto + imagen teleprompter */
+            .tp-description-block {
+                grid-template-columns: 1fr;
+                margin: 3rem auto 2rem;
+                gap: 1.5rem;
+            }
+
+            .tp-image-col img {
+                max-width: 260px;
+                margin: 0 auto;
+                display: block;
+            }
+
+            .tp-description-text,
+            .tp-cta-text {
+                font-size: 1rem;
+            }
+
+            /* Teleprompter input */
+            .teleprompter-input {
+                margin: 2rem auto 1rem;
+            }
+
+            /* Teleprompter display */
+            .teleprompter-display {
+                height: 160px;
+            }
+
+            /* Videos + redes */
+            .video-redes-section {
+                margin: 4rem auto 2rem;
+            }
+
+            .video-text-row {
+                grid-template-columns: 1fr;
+            }
+
+            .redes-col {
+                gap: 0.75rem;
+            }
+
+            .redes-title {
+                font-size: 1.1rem;
+            }
+
+            .redes-desc,
+            .redes-sub {
+                font-size: 0.9rem;
+            }
+
+            /* Deshabilitar holofoil 3D en touch */
+            .inbox-card {
+                transform: none !important;
             }
         }
 
         @media (max-width: 480px) {
+
+            /* Inbox cards */
             .inbox-grid {
                 grid-template-columns: 1fr;
+            }
+
+            /* Título sección */
+            .inbox-title {
+                font-size: 1.3rem;
+            }
+
+            /* Texto teleprompter */
+            .tp-description-text,
+            .tp-cta-text {
+                font-size: 0.9rem;
+            }
+
+            /* Teleprompter display */
+            .teleprompter-display {
+                height: 130px;
+            }
+
+            /* Videos */
+            .video-redes-section {
+                margin: 3rem auto 2rem;
             }
         }
 
@@ -586,7 +981,7 @@
     <!-- Main content -->
     <main class="main-content">
         <!-- Texto para el teleprompter -->
-        <div class="teleprompter-input">
+        <div class="teleprompter-input" id="teleprompter-inicio">
             <textarea id="tp-textarea" class="teleprompter-textarea" placeholder="Escribe o pega aquí el texto para el teleprompter..."></textarea>
         </div>
 
@@ -602,9 +997,41 @@
             </div>
         </div>
 
-        <!-- Video -->
-        <section class="teleprompter-section" id="teleprompter">
-            <iframe class="teleprompter-video" src="https://www.youtube.com/embed/RuSBj_BUEpc" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <!-- Descripción teleprompter + imagen -->
+        <div class="tp-description-block">
+            <div class="tp-text-col">
+                <p class="tp-description-text">
+                    Este teleprompter es tuyo. Pega un discurso, una idea, las palabras que siempre se te escapan justo cuando más las necesitas. Practica cuantas veces quieras — nadie te está mirando todavía. Sirve para conferencias, clases, guiones, entrevistas o simplemente para escucharte hablar en voz alta sin perder el hilo.
+                </p>
+                <p class="tp-cta-text">
+                    ¿Quieres grabar tu voz y publicarla en el mural? <span class="tp-cta-highlight">Regístrate o inicia sesión</span> — ahí empieza la parte interesante.
+                </p>
+            </div>
+            <div class="tp-image-col">
+                <img src="assets/img/cardsindex/TP-index.png" alt="Teleprompter profesional">
+            </div>
+        </div>
+
+        <!-- Videos + Redes Sociales -->
+        <section class="video-redes-section" id="teleprompter">
+
+            <!-- Video grande full width -->
+            <div class="video-full">
+                <iframe class="teleprompter-video" src="https://www.youtube.com/embed/RuSBj_BUEpc" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+
+            <!-- Video pequeño izquierda + texto derecha -->
+            <div class="video-text-row">
+                <div class="video-small">
+                    <iframe class="teleprompter-video" src="https://www.youtube.com/embed/Ur5yTub8koM?start=34" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="redes-col">
+                    <h3 class="redes-title">Publica donde llegues más lejos</h3>
+                    <p class="redes-desc">Lo que grabas en GRAFITER no tiene por qué quedarse aquí. Descarga tu audio, combínalo con tu video y súbelo donde vive tu audiencia. Cada palabra que practicaste con el teleprompter puede convertirse en contenido real para quien quiera escucharte.</p>
+                    <p class="redes-sub">Tu voz, tu guión, tu imagen — GRAFITER te da el punto de partida.</p>
+                </div>
+            </div>
+
         </section>
 
         <div id="loading" class="loading" style="display: none;">
@@ -635,39 +1062,39 @@
         <div class="inbox-grid">
 
             <div class="inbox-card">
-                <div class="inbox-card-icon">🎙️</div>
-                <h3 class="inbox-card-title">Mural de Voces</h3>
-                <p class="inbox-card-desc">Graba mensajes de voz y publícalos en el mural en tiempo real. Cada burbuja representa una voz de la comunidad.</p>
+                <div class="inbox-card-icon"><img src="assets/img/cardsindex/1.png" alt="VoiceBox"></div>
+                <h3 class="inbox-card-title">1. Abre el VoiceBox</h3>
+                <p class="inbox-card-desc">Entra al VoiceBox. Ahí te espera el teleprompter, esa pantalla que lee contigo —o quizás un poco antes que tú— para que ninguna idea se pierda en el camino.</p>
             </div>
 
             <div class="inbox-card">
-                <div class="inbox-card-icon">🌐</div>
-                <h3 class="inbox-card-title">Salones por idioma</h3>
-                <p class="inbox-card-desc">Accede a espacios en Español, English e Italiano. Cada salón tiene su propia comunidad y conversaciones.</p>
+                <div class="inbox-card-icon"><img src="assets/img/cardsindex/2.png" alt="Guión"></div>
+                <h3 class="inbox-card-title">2. Escribe tu guión</h3>
+                <p class="inbox-card-desc">Escribe lo que tienes ganas de decir. No importa si es largo o breve: el teleprompter avanza a tu ritmo, como un lector paciente que nunca te interrumpe.</p>
             </div>
 
             <div class="inbox-card">
-                <div class="inbox-card-icon">📺</div>
-                <h3 class="inbox-card-title">Teleprompter</h3>
-                <p class="inbox-card-desc">Utiliza el video integrado como teleprompter para tus transmisiones en vivo o grabaciones de contenido.</p>
+                <div class="inbox-card-icon"><img src="assets/img/cardsindex/3.png" alt="Grabar"></div>
+                <h3 class="inbox-card-title">3. Graba tu voz</h3>
+                <p class="inbox-card-desc">Presiona grabar. Tu voz —esa cosa irrepetible— queda atrapada en un instante. Puedes subir un audio propio si ya lo tienes listo. Escúchate antes de soltar.</p>
             </div>
 
             <div class="inbox-card">
-                <div class="inbox-card-icon">📚</div>
-                <h3 class="inbox-card-title">Recursos</h3>
-                <p class="inbox-card-desc">Próximamente: biblioteca de libros, guías y materiales de aprendizaje recomendados por la comunidad.</p>
+                <div class="inbox-card-icon"><img src="assets/img/cardsindex/4.png" alt="Salón"></div>
+                <h3 class="inbox-card-title">4. Publica en tu Salón</h3>
+                <p class="inbox-card-desc">Dale título, una imagen si quieres, y elige dónde aterriza: Español, English o Italiano. Cada Salón tiene su propia gente esperando escuchar algo nuevo.</p>
             </div>
 
             <div class="inbox-card">
-                <div class="inbox-card-icon">🤝</div>
-                <h3 class="inbox-card-title">Colaboraciones</h3>
-                <p class="inbox-card-desc">Conectamos creadores, marcas y comunidades. Si quieres aparecer en GRAFITER, escríbenos.</p>
+                <div class="inbox-card-icon"><img src="assets/img/cardsindex/5.png" alt="Mural"></div>
+                <h3 class="inbox-card-title">5. Tu voz en el Mural</h3>
+                <p class="inbox-card-desc">Al confirmar, tu grabación aparece en el mural del Salón. Ya no es tuya solamente: ahora le pertenece a cualquiera que llegue y decida escucharla.</p>
             </div>
 
             <div class="inbox-card">
-                <div class="inbox-card-icon">⚙️</div>
-                <h3 class="inbox-card-title">Modos de uso</h3>
-                <p class="inbox-card-desc">Modo día, semana y mes para filtrar el contenido del mural según tu preferencia de tiempo.</p>
+                <div class="inbox-card-icon"><img src="assets/img/cardsindex/6.png" alt="Explorar"></div>
+                <h3 class="inbox-card-title">6. Explora el contenido</h3>
+                <p class="inbox-card-desc">Navega el mural por Hoy, Esta Semana o Este Mes. El tiempo aquí se dobla un poco: lo urgente convive con lo que dura, y tú decides desde dónde escuchar.</p>
             </div>
 
         </div>
@@ -711,7 +1138,11 @@
 
                 // Botones de navegación
                 document.getElementById('btn-inicio').addEventListener('click', () => {
-                    document.getElementById('teleprompter').scrollIntoView({ behavior: 'smooth' });
+                    const target = document.getElementById('teleprompter-inicio');
+                    const header = document.querySelector('.header');
+                    const headerHeight = header ? header.offsetHeight : 0;
+                    const top = target.getBoundingClientRect().top + window.scrollY - headerHeight;
+                    window.scrollTo({ top, behavior: 'smooth' });
                 });
 
                 document.getElementById('btn-eventos').addEventListener('click', () => {
@@ -939,6 +1370,29 @@
             new VoiceWallApp();
             new RegistrationForm();
             new TeleprompterApp();
+
+            // Reverse Holofoil effect on inbox cards
+            document.querySelectorAll('.inbox-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const mx = (e.clientX - rect.left) / rect.width;
+                    const my = (e.clientY - rect.top) / rect.height;
+                    const angle = Math.atan2(my - 0.5, mx - 0.5) * (180 / Math.PI) + 90;
+                    const rx = (my - 0.5) * 12;
+                    const ry = (mx - 0.5) * -12;
+                    card.style.setProperty('--holo-angle', `${angle}deg`);
+                    card.style.setProperty('--mx', mx);
+                    card.style.setProperty('--my', my);
+                    card.style.transform = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.02)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = '';
+                    card.style.removeProperty('--holo-angle');
+                    card.style.removeProperty('--mx');
+                    card.style.removeProperty('--my');
+                });
+            });
         });
     </script>
 </body>

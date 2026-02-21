@@ -177,26 +177,33 @@ body {
 
 .header-button {
     padding: 0.5rem 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 0.5rem;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.875rem;
+    background: none;
+    border: none;
+    box-shadow: none;
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.96rem;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
     cursor: pointer;
     transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
+    background-image: linear-gradient(to right, #FFA500, #FFD700, #FFFF00);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .header-button:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: rgba(255, 255, 255, 0.9);
     transform: translateY(-1px);
+    filter: brightness(1.2);
 }
 
 .header-button.active {
-    background: linear-gradient(135deg, #FFA500, #FFD700);
-    color: white;
-    border-color: transparent;
+    background-image: linear-gradient(to right, #FFA500, #FFD700, #FFFF00);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: brightness(1.15);
 }
 
 @keyframes float {
