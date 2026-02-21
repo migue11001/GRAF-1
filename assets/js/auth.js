@@ -182,8 +182,10 @@ class RegistrationForm {
             }
 
             localStorage.setItem('grafiter_token', token);
+            const payload = JSON.parse(atob(token.split('.')[1]));
             const session = {
                 email,
+                userId: payload.sub,
                 loggedInAt: new Date().toISOString()
             };
             localStorage.setItem('grafiter_session', JSON.stringify(session));

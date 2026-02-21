@@ -703,7 +703,7 @@
                     );
 
                     // Juntar y filtrar solo las del usuario actual
-                    const allPubs = responses.flat().filter(p => p.user_email === session.email);
+                    const allPubs = responses.flat().filter(p => p.user_id === session.userId);
 
                     this.pubsList.innerHTML = '';
                     if (allPubs.length === 0) {
