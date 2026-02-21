@@ -43,22 +43,11 @@ class VoiceWallApp {
     }
 
     getFilteredNotesByPeriod(period) {
-        const now = new Date();
-        const HOUR_24 = 24 * 60 * 60 * 1000;
-        const DAYS_7  = 7  * 24 * 60 * 60 * 1000;
-        const DAYS_30 = 30 * 24 * 60 * 60 * 1000;
+        const periodMap = { 'dia': 'day', 'semana': 'week', 'mes': 'month' };
 
         const filtered = this.notes.filter(note => {
             if (note.cancelled) return false;
-            const age = now - new Date(note.timestamp);
-            if (age > DAYS_30) return false;
-
-            switch(period) {
-                case 'dia':    return age <= HOUR_24;
-                case 'semana': return age > HOUR_24 && age <= DAYS_7;
-                case 'mes':    return age > DAYS_7  && age <= DAYS_30;
-                default:       return false;
-            }
+            return note.currentPeriod === periodMap[period];
         });
 
         filtered.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
@@ -92,24 +81,10 @@ class VoiceWallApp {
     }
 
     cleanExpiredNotes() {
-        const now = new Date();
-        const DAYS_30 = 30 * 24 * 60 * 60 * 1000;
+        // La VIEW de Supabase ya filtra publicaciones expiradas.
+        // Solo eliminamos las canceladas localmente.
         const originalLength = this.notes.length;
-
-        this.notes = this.notes.filter(note => {
-            const age = now - new Date(note.timestamp);
-            const isExpired = age > DAYS_30;
-            const isCancelled = note.cancelled;
-
-            if (isExpired || isCancelled) {
-                if (note.slotNumber) {
-                    this.logSlotLiberation(note.slotNumber, isExpired ? 'expired' : 'cancelled');
-                }
-                return false;
-            }
-            return true;
-        });
-
+        this.notes = this.notes.filter(note => !note.cancelled);
         if (this.notes.length !== originalLength) {
             this.saveNotes();
         }
@@ -468,6 +443,7 @@ class VoiceWallApp {
                 userID: meta.user_id,
                 pubCode: meta.pub_code,
                 coverImage: meta.cover_image,
+                currentPeriod: meta.current_period,
                 audioUrl: null,
                 cancelled: false,
             }));
